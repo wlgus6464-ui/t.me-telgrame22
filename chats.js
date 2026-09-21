@@ -6,8 +6,8 @@
    ========================================================= */
 
 window.SITE = {
-  channelName: "김지현 관점방🎖",
-  username: "@kimjihyun",
+  channelName: "قوات الشرق الأوسط",
+  username: "@قوات الشرق الأوسط",
   subscribers: "11,785 subscribers",
   description: "중동 세력방",
   joinUrl: "https://t.me/nostradamousbtc",
