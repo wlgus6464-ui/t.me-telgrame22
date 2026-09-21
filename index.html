@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>노스트라다무스 관점방🎖 | @nostradamousbtc</title>
-  <meta name="description" content="비트코인 노스트라다무스 텔레그램 채널 @nostradamousbtc 공식 스타일 홈페이지. 관점 · 시황 · 유튜브." />
+  <title>김지현 관점방🎖</title>
+  <meta name="description" content="김지현 관점방 · 중동 세력방" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet" />
@@ -21,8 +21,6 @@
       --gold: #d4af37;
       --gold-2: #f3d77a;
       --accent: #2aabee;
-      --green: #4caf50;
-      --red: #e53935;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: var(--bg); color: var(--text); font-family: "Noto Sans KR", sans-serif; }
@@ -35,7 +33,6 @@
       grid-template-columns: 88px 320px minmax(0, 1fr);
     }
 
-    /* rail */
     .rail {
       background: #0a1118;
       border-right: 1px solid var(--line);
@@ -58,16 +55,13 @@
       box-shadow: 0 0 0 3px rgba(212,175,55,.25);
     }
 
-    /* sidebar */
     .side {
       background: var(--panel);
       border-right: 1px solid var(--line);
       display: flex;
       flex-direction: column;
     }
-    .side-search {
-      padding: 14px 14px 10px;
-    }
+    .side-search { padding: 14px 14px 10px; }
     .side-search input {
       width: 100%;
       background: #242f3d;
@@ -80,7 +74,7 @@
     }
     .chat-item {
       display: flex; gap: 12px; align-items: center;
-      padding: 10px 14px; cursor: pointer;
+      padding: 10px 14px;
     }
     .chat-item.active { background: #2b5278; }
     .chat-item img {
@@ -88,9 +82,7 @@
     }
     .chat-item h4 { font-size: 15px; font-weight: 600; }
     .chat-item p { font-size: 13px; color: #b8c4ce; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-    .chat-item small { color: #8ea0b0; font-size: 12px; margin-left: auto; }
 
-    /* main */
     .main { background: var(--chat); display: flex; flex-direction: column; min-height: 100vh; }
     .topbar {
       height: 64px;
@@ -113,20 +105,15 @@
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
+      display: inline-block;
     }
     .join.gold {
       background: linear-gradient(180deg, #f1d36a, #b89020);
       color: #1a1404;
     }
 
-    .hero {
-      position: relative;
-      height: 320px;
-      overflow: hidden;
-    }
-    .hero img {
-      width: 100%; height: 100%; object-fit: cover;
-    }
+    .hero { position: relative; height: 320px; overflow: hidden; }
+    .hero img { width: 100%; height: 100%; object-fit: cover; }
     .hero-mask {
       position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(14,22,33,.15), rgba(14,22,33,.92));
@@ -154,11 +141,7 @@
       display: flex; flex-direction: column; gap: 18px;
     }
 
-    .date-sep {
-      text-align: center;
-      color: #c9d4de;
-      font-size: 13px;
-    }
+    .date-sep { text-align: center; color: #c9d4de; font-size: 13px; }
     .date-sep span {
       background: rgba(24,37,51,.9);
       padding: 6px 12px;
@@ -171,9 +154,7 @@
       padding: 14px 14px 10px;
       box-shadow: 0 8px 24px rgba(0,0,0,.18);
     }
-    .post.pin {
-      border: 1px solid rgba(42,171,238,.45);
-    }
+    .post.pin { border: 1px solid rgba(42,171,238,.45); }
     .post .meta {
       display: flex; align-items: center; gap: 8px;
       color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 8px;
@@ -187,9 +168,7 @@
       border-radius: 10px;
       margin: 12px 0 8px;
     }
-    .react {
-      display: flex; gap: 8px; margin-top: 8px; color: var(--muted); font-size: 13px;
-    }
+    .react { display: flex; gap: 8px; margin-top: 8px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
     .react b { background: #242f3d; padding: 4px 8px; border-radius: 12px; font-weight: 600; color: #d7e3ec; }
 
     .notice {
@@ -202,11 +181,7 @@
       line-height: 1.7;
     }
 
-    .links {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .card-link {
       background: var(--panel-2);
       border-radius: 12px;
@@ -248,15 +223,15 @@
       <div class="chat-item active">
         <img src="assets/QIjUt.jpg" alt="채널 프로필" />
         <div>
-          <h4>노스트라다무스 관점방🎖</h4>
-          <p>비트코인 노스트라다무스 텔레그램 채널</p>
+          <h4 id="sideName">김지현 관점방🎖</h4>
+          <p id="sideDesc">중동 세력방</p>
         </div>
       </div>
       <div class="chat-item">
         <img src="assets/Qqpfp.jpg" alt="유튜브" />
         <div>
-          <h4>비트코인 노스트라다무스</h4>
-          <p>YouTube · 30.1K</p>
+          <h4 id="sideYt">김지현 유튜브</h4>
+          <p id="sideYtMeta">YouTube</p>
         </div>
       </div>
     </aside>
@@ -266,120 +241,123 @@
         <div class="who">
           <img src="assets/QIjUt.jpg" alt="avatar" />
           <div>
-            <h1>노스트라다무스 관점방🎖</h1>
-            <span>11,785 subscribers · @nostradamousbtc</span>
+            <h1 id="topName">김지현 관점방🎖</h1>
+            <span id="topMeta"></span>
           </div>
         </div>
-        <a class="join" href="https://t.me/nostradamousbtc" target="_blank" rel="noopener">채널 입장</a>
+        <a class="join" id="joinBtn" href="#" target="_blank" rel="noopener">채널 입장</a>
       </header>
 
       <div class="hero">
-        <img src="assets/Ijzi1.jpg" alt="노스트라다무스 관점방 배너 1920x1080" width="1920" height="1080" />
+        <img src="assets/Ijzi1.jpg" alt="배너 1920x1080" width="1920" height="1080" />
         <div class="hero-mask">
           <div class="hero-copy">
-            <h2>노스트라다무스 관점방🎖</h2>
-            <p>비트코인 노스트라다무스 텔레그램 채널 — 시황, 시나리오, 후속 관점을 한곳에서.</p>
-            <div class="pills">
-              <span class="pill">@nostradamousbtc</span>
-              <span class="pill">YouTube 30.1K</span>
-              <span class="pill">Telegram 11.7K+</span>
-              <span class="pill">관점 · 시황 · 선물</span>
-            </div>
+            <h2 id="heroName">김지현 관점방🎖</h2>
+            <p id="heroText"></p>
+            <div class="pills" id="pills"></div>
           </div>
         </div>
       </div>
 
-      <div class="feed">
-        <div class="notice">
-          본 페이지는 <b>https://t.me/nostradamousbtc</b> 채널의 공개 정보(채널명, 소개, 구독자 규모, 유튜브 연동)를 바탕으로 재구성한 홈페이지입니다.
-          텔레그램 앱 내부의 실시간 게시글·차트·시그널을 그대로 복제할 수는 없으며, 아래 글은 채널/유튜브에서 반복되는 톤을 반영한 레이아웃 예시입니다.
-          투자 권유가 아니며 모든 판단과 책임은 본인에게 있습니다.
-        </div>
-
-        <div class="post pin">
-          <div class="meta">노스트라다무스 관점방🎖 <em>고정됨</em></div>
-          <div class="txt">📌 채널 안내
-
-비트코인 노스트라다무스 텔레그램 채널
-후속 관점 · 시나리오 · 타이밍은 이곳에서 이어갑니다.
-
-유튜브
-→ https://www.youtube.com/@bitcoin-nostradamus
-
-텔레그램
-→ https://t.me/nostradamousbtc
-
-가상자산 이용자 보호 등에 관한 법률, 특정금융정보법 및 관계 법령을 준수합니다.
-본 콘텐츠는 투자 자문이 아닙니다.</div>
-          <div class="react"><b>📌 고정</b><b>👍 214</b><b>🔥 89</b></div>
-        </div>
-
-        <p class="date-sep"><span>2026년 9월 21일</span></p>
-
-        <div class="post">
-          <div class="meta">노스트라다무스 관점방🎖 <em>10:21</em></div>
-          <div class="txt">비트코인, 지금 구간에서 볼 것은 ‘방향’이 아니라 ‘구조’입니다.
-
-저점을 깨지 않는 조정인지,
-아니면 시나리오가 바뀌는 구간인지.
-
-후속 관점은 차트와 함께 채널에서 이어가겠습니다.</div>
-          <img class="shot" src="assets/x39LN.jpg" alt="비트코인 4시간 차트 분석 1920x1080" width="1920" height="1080" />
-          <div class="react"><b>👍 128</b><b>🔥 41</b><b>👀 19</b></div>
-        </div>
-
-        <div class="post">
-          <div class="meta">노스트라다무스 관점방🎖 <em>어제</em></div>
-          <div class="txt">선물 관점 정리 (예시 레이아웃)
-
-• 진입 / 손절 / 목표가 구간은 항상 시나리오와 함께
-• 한 방향으로만 고집하지 말 것
-• 알트 시즌이 온다면 ‘언제’보다 ‘어떤 구조에서’가 먼저
-
-유튜브에서 말한 큰 그림의 디테일은 여기서 업데이트합니다.</div>
-          <img class="shot" src="assets/1SSvA.jpg" alt="비트코인 선물 롱 구간 차트 1920x1080" width="1920" height="1080" />
-          <div class="react"><b>👍 96</b><b>⚡ 22</b></div>
-        </div>
-
-        <div class="post">
-          <div class="meta">노스트라다무스 관점방🎖 <em>이번 주</em></div>
-          <div class="txt">작업실 한 컷.
-
-차트만 보지 말고, 시장의 심리도 같이 보십시오.
-대부분의 사람이 같은 감정을 반복합니다.</div>
-          <img class="shot" src="assets/Qqpfp.jpg" alt="분석 작업실 1920x1080" width="1920" height="1080" />
-          <div class="react"><b>👍 77</b><b>🎖 15</b></div>
-        </div>
-
-        <div class="links">
-          <a class="card-link" href="https://t.me/nostradamousbtc" target="_blank" rel="noopener">
-            <img src="assets/QIjUt.jpg" alt="TG" style="width:56px;height:56px;border-radius:50%;object-fit:cover" />
-            <div>
-              <strong>텔레그램 채널 입장</strong>
-              <span>t.me/nostradamousbtc</span>
-            </div>
-          </a>
-          <a class="card-link" href="https://www.youtube.com/@bitcoin-nostradamus" target="_blank" rel="noopener">
-            <img src="assets/Ijzi1.jpg" alt="YT" style="width:56px;height:56px;border-radius:12px;object-fit:cover" />
-            <div>
-              <strong>유튜브 채널</strong>
-              <span>비트코인 노스트라다무스 · 30.1K</span>
-            </div>
-          </a>
-        </div>
-
-        <div class="notice">
-          ※ 가상자산 거래 시 원금 손실 가능성이 있습니다. 해외 거래소 이용, 선물·레버리지 거래는 위험이 매우 큽니다.
-          영상을 포함한 모든 자료의 주의사항을 확인하지 않아 발생하는 손실에 대해 책임지지 않습니다.
-          모든 선택과 책임은 본인에게 있습니다.
-        </div>
-      </div>
+      <div class="feed" id="feed"></div>
 
       <div class="footer-bar">
-        <p>노스트라다무스 관점방🎖 · 비트코인 노스트라다무스 텔레그램 채널</p>
-        <a class="join gold" href="https://t.me/nostradamousbtc" target="_blank" rel="noopener">텔레그램에서 보기</a>
+        <p id="footerText"></p>
+        <a class="join gold" id="footerBtn" href="#" target="_blank" rel="noopener">텔레그램에서 보기</a>
       </div>
     </section>
   </div>
+
+  <script src="chats.js"></script>
+  <script>
+    (function () {
+      var S = window.SITE || {};
+      var list = window.CHATS || [];
+
+      function setText(id, value) {
+        var el = document.getElementById(id);
+        if (el && value != null) el.textContent = value;
+      }
+
+      document.title = S.channelName || document.title;
+      setText("sideName", S.channelName);
+      setText("sideDesc", S.description);
+      setText("sideYt", S.youtubeName);
+      setText("sideYtMeta", S.youtubeMeta);
+      setText("topName", S.channelName);
+      setText("topMeta", (S.subscribers || "") + (S.username ? " · " + S.username : ""));
+      setText("heroName", S.channelName);
+      setText("heroText", S.heroText);
+      setText("footerText", S.footerText);
+
+      var joinBtn = document.getElementById("joinBtn");
+      var footerBtn = document.getElementById("footerBtn");
+      if (joinBtn) {
+        joinBtn.href = S.joinUrl || "#";
+        joinBtn.textContent = S.joinLabel || "채널 입장";
+      }
+      if (footerBtn) {
+        footerBtn.href = S.joinUrl || "#";
+        footerBtn.textContent = S.footerButton || "텔레그램에서 보기";
+      }
+
+      var pills = document.getElementById("pills");
+      if (pills && S.pills) {
+        pills.innerHTML = S.pills.map(function (p) {
+          return '<span class="pill">' + p + "</span>";
+        }).join("");
+      }
+
+      var feed = document.getElementById("feed");
+      if (!feed) return;
+
+      feed.innerHTML = list.map(function (item) {
+        if (item.type === "notice") {
+          return '<div class="notice">' + escapeHtml(item.text || "") + "</div>";
+        }
+        if (item.type === "date") {
+          return '<p class="date-sep"><span>' + escapeHtml(item.text || "") + "</span></p>";
+        }
+        if (item.type === "links") {
+          return (
+            '<div class="links">' +
+              '<a class="card-link" href="' + (S.joinUrl || "#") + '" target="_blank" rel="noopener">' +
+                '<img src="assets/QIjUt.jpg" alt="TG" style="width:56px;height:56px;border-radius:50%;object-fit:cover" />' +
+                "<div><strong>텔레그램 채널 입장</strong><span>" + escapeHtml(S.joinUrl || "") + "</span></div>" +
+              "</a>" +
+              '<a class="card-link" href="' + (S.youtubeUrl || "#") + '" target="_blank" rel="noopener">' +
+                '<img src="assets/Ijzi1.jpg" alt="YT" style="width:56px;height:56px;border-radius:12px;object-fit:cover" />' +
+                "<div><strong>" + escapeHtml(S.youtubeName || "유튜브") + "</strong><span>" + escapeHtml(S.youtubeMeta || "") + "</span></div>" +
+              "</a>" +
+            "</div>"
+          );
+        }
+
+        var img = item.image
+          ? '<img class="shot" src="' + item.image + '" alt="' + escapeHtml(item.imageAlt || "") + '" width="1920" height="1080" />'
+          : "";
+        var reacts = (item.reactions || []).map(function (r) {
+          return "<b>" + escapeHtml(r) + "</b>";
+        }).join("");
+
+        return (
+          '<div class="post' + (item.pinned ? " pin" : "") + '">' +
+            '<div class="meta">' + escapeHtml(item.author || S.channelName || "") +
+              "<em>" + escapeHtml(item.time || "") + "</em></div>" +
+            '<div class="txt">' + escapeHtml(item.text || "") + "</div>" +
+            img +
+            (reacts ? '<div class="react">' + reacts + "</div>" : "") +
+          "</div>"
+        );
+      }).join("");
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+    })();
+  </script>
 </body>
 </html>
