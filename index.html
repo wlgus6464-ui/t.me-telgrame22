@@ -2,361 +2,172 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>김지현 관점방🎖</title>
-  <meta name="description" content="김지현 관점방 · 중동 세력방" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#17212b" />
+  <title>김지현 관점방</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/avatar.jpg" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0b1016;
-      --panel: #17212b;
-      --panel-2: #1e2a36;
-      --chat: #0e1621;
+      --bg: #0e1621;
+      --header: #17212b;
+      --text: #f5f5f5;
       --bubble: #182533;
-      --line: #242f3d;
-      --text: #e4ecf2;
-      --muted: #8ea0b0;
-      --gold: #d4af37;
-      --gold-2: #f3d77a;
-      --accent: #2aabee;
+      --link: #6ab3f3;
+      --blue: #2aabee;
+      --chip: #25303d;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background: var(--bg); color: var(--text); font-family: "Noto Sans KR", sans-serif; }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
-
-    .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 88px 320px minmax(0, 1fr);
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: #0b0f14; color: var(--text); font-family: "Noto Sans KR", "Segoe UI", sans-serif; }
+    body { display: grid; place-items: center; }
+    .app-window {
+      width: min(430px, 100vw);
+      height: min(860px, 100vh);
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
     }
-
-    .rail {
-      background: #0a1118;
-      border-right: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 18px 0;
-      gap: 18px;
+    @media (max-width: 480px) { .app-window { width: 100vw; height: 100vh; } }
+    .winbar {
+      height: 36px; background: #1b2733; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 10px 0 14px; color: #9aa8b4; font-size: 13px; flex-shrink: 0;
     }
-    .rail .dot {
-      width: 48px; height: 48px; border-radius: 16px;
-      display: grid; place-items: center;
-      background: var(--panel-2);
-      color: var(--muted);
-      font-size: 20px;
+    .winbar .dots { display: flex; gap: 8px; }
+    .winbar i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; background: #3d4b58; }
+    .winbar .cls { background: #e04f4f; }
+    header.tg {
+      height: 60px; background: var(--header); display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; flex-shrink: 0;
     }
-    .rail .dot.active {
-      background: linear-gradient(145deg, #c9a227, #7a5a12);
-      color: #111;
-      box-shadow: 0 0 0 3px rgba(212,175,55,.25);
-    }
-
-    .side {
-      background: var(--panel);
-      border-right: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-    }
-    .side-search { padding: 14px 14px 10px; }
-    .side-search input {
-      width: 100%;
-      background: #242f3d;
-      border: 0;
-      border-radius: 22px;
-      color: var(--text);
-      padding: 11px 16px;
-      outline: none;
-      font-family: inherit;
-    }
-    .chat-item {
-      display: flex; gap: 12px; align-items: center;
-      padding: 10px 14px;
-    }
-    .chat-item.active { background: #2b5278; }
-    .chat-item img {
-      width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
-    }
-    .chat-item h4 { font-size: 15px; font-weight: 600; }
-    .chat-item p { font-size: 13px; color: #b8c4ce; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-
-    .main { background: var(--chat); display: flex; flex-direction: column; min-height: 100vh; }
-    .topbar {
-      height: 64px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 18px;
-      position: sticky; top: 0; z-index: 20;
-    }
-    .who { display: flex; align-items: center; gap: 12px; }
-    .who img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
-    .who h1 { font-size: 16px; font-weight: 700; }
-    .who span { font-size: 12px; color: var(--muted); }
-    .join {
-      background: var(--accent);
-      color: #fff;
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      display: inline-block;
-    }
-    .join.gold {
-      background: linear-gradient(180deg, #f1d36a, #b89020);
-      color: #1a1404;
-    }
-
-    .hero { position: relative; height: 320px; overflow: hidden; }
-    .hero img { width: 100%; height: 100%; object-fit: cover; }
-    .hero-mask {
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(14,22,33,.15), rgba(14,22,33,.92));
-      display: flex; align-items: flex-end;
-      padding: 28px;
-    }
-    .hero-copy h2 {
-      font-family: Outfit, "Noto Sans KR", sans-serif;
-      font-size: 34px; letter-spacing: -.5px;
-    }
-    .hero-copy p { color: #d7e0e8; margin-top: 6px; max-width: 720px; }
-    .pills { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-    .pill {
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(212,175,55,.35);
-      color: var(--gold-2);
-      padding: 6px 10px; border-radius: 999px; font-size: 12px;
-    }
-
-    .feed {
-      max-width: 860px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 22px 16px 120px;
-      display: flex; flex-direction: column; gap: 18px;
-    }
-
-    .date-sep { text-align: center; color: #c9d4de; font-size: 13px; }
-    .date-sep span {
-      background: rgba(24,37,51,.9);
-      padding: 6px 12px;
-      border-radius: 20px;
-    }
-
-    .post {
-      background: var(--bubble);
-      border-radius: 16px 16px 16px 4px;
-      padding: 14px 14px 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.18);
-    }
-    .post.pin { border: 1px solid rgba(42,171,238,.45); }
-    .post .meta {
-      display: flex; align-items: center; gap: 8px;
-      color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 8px;
-    }
-    .post .meta em { font-style: normal; color: var(--gold); font-size: 12px; margin-left: auto; }
-    .post .txt { font-size: 15px; line-height: 1.65; white-space: pre-wrap; }
-    .post img.shot {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      border-radius: 10px;
-      margin: 12px 0 8px;
-    }
-    .react { display: flex; gap: 8px; margin-top: 8px; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
-    .react b { background: #242f3d; padding: 4px 8px; border-radius: 12px; font-weight: 600; color: #d7e3ec; }
-
-    .notice {
-      background: #1a2430;
-      border-left: 3px solid var(--gold);
-      padding: 14px 16px;
-      border-radius: 8px;
-      color: #c5d0da;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .card-link {
-      background: var(--panel-2);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex; gap: 12px; align-items: center;
-    }
-    .card-link strong { display: block; font-size: 14px; }
-    .card-link span { color: var(--muted); font-size: 12px; }
-
-    .footer-bar {
-      position: sticky; bottom: 0;
-      background: rgba(23,33,43,.94);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid var(--line);
-      padding: 12px 16px;
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-    }
-    .footer-bar p { font-size: 12px; color: var(--muted); }
-
-    @media (max-width: 980px) {
-      .app { grid-template-columns: 1fr; }
-      .rail, .side { display: none; }
-      .hero { height: 240px; }
-      .hero-copy h2 { font-size: 24px; }
-      .links { grid-template-columns: 1fr; }
-    }
+    .back { width: 28px; color: #d7e3ee; font-size: 26px; line-height: 1; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+    .who { flex: 1; min-width: 0; }
+    .who h1 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .who p { font-size: 13px; color: #8fa1b0; margin-top: 1px; }
+    .icon-btn { width: 34px; height: 34px; display: grid; place-items: center; color: #c5d3de; font-size: 18px; }
+    .feed { flex: 1; overflow-y: auto; padding: 10px 8px 12px; background: var(--bg); }
+    .feed::-webkit-scrollbar { width: 0; }
+    .date-chip { display: flex; justify-content: center; margin: 10px 0 14px; }
+    .date-chip span { background: #1c2a38; color: #d5dee6; font-size: 13px; padding: 5px 12px; border-radius: 20px; }
+    .msg { background: var(--bubble); border-radius: 10px 14px 14px 10px; padding: 10px 12px 8px; margin: 0 4px 10px; }
+    .msg .author { color: var(--blue); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .msg .txt { font-size: 15px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+    .msg .txt a { color: var(--link); text-decoration: none; }
+    .msg .disc { margin-top: 12px; font-size: 14px; font-style: italic; color: #d7e0e8; line-height: 1.5; }
+    .yt { margin-top: 10px; border-left: 3px solid #7b5cff; background: #1b2836; border-radius: 0 8px 8px 0; overflow: hidden; display: block; color: inherit; text-decoration: none; }
+    .yt .meta { padding: 8px 10px 6px; }
+    .yt .meta small { color: #8b9aa8; font-size: 12px; }
+    .yt .meta b { display: block; font-size: 14px; margin: 3px 0; }
+    .yt .meta p { color: #9aafbf; font-size: 13px; white-space: pre-wrap; }
+    .yt .thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+    .yt .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .yt .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 58px; height: 40px; border-radius: 10px; background: #ff0000; color: #fff; display: grid; place-items: center; font-size: 18px; }
+    .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 8px; }
+    .reacts { display: flex; gap: 6px; }
+    .chip { border: 0; background: var(--chip); color: #e8eef3; border-radius: 16px; padding: 4px 9px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .chip.on { background: #2b5278; box-shadow: inset 0 0 0 1px rgba(90,170,230,.45); }
+    .meta-right { color: #7f8f9c; font-size: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap; padding-bottom: 2px; }
+    footer.join { background: var(--header); border-top: 1px solid #243140; height: 54px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+    footer.join a { color: var(--blue); font-size: 16px; font-weight: 600; text-decoration: none; }
+    footer.join .gift { position: absolute; right: 16px; color: #7d8b97; font-size: 20px; }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="rail">
-      <div class="dot active">₿</div>
-      <div class="dot">▶</div>
-      <div class="dot">☰</div>
-    </aside>
-
-    <aside class="side">
-      <div class="side-search"><input value="검색" readonly /></div>
-      <div class="chat-item active">
-        <img src="assets/QIjUt.jpg" alt="채널 프로필" />
-        <div>
-          <h4 id="sideName">김지현 관점방🎖</h4>
-          <p id="sideDesc">중동 세력방</p>
-        </div>
+  <div class="app-window">
+    <div class="winbar">
+      <span id="winTitle">김지현 관점방</span>
+      <div class="dots"><i></i><i></i><i class="cls"></i></div>
+    </div>
+    <header class="tg">
+      <div class="back">‹</div>
+      <img class="avatar" id="avatar" src="assets/avatar.jpg" alt="프로필" />
+      <div class="who">
+        <h1><span id="name">김지현 관점방</span><span id="badge">🎖</span></h1>
+        <p id="subs">구독자 11,786명</p>
       </div>
-      <div class="chat-item">
-        <img src="assets/Qqpfp.jpg" alt="유튜브" />
-        <div>
-          <h4 id="sideYt">김지현 유튜브</h4>
-          <p id="sideYtMeta">YouTube</p>
-        </div>
-      </div>
-    </aside>
-
-    <section class="main">
-      <header class="topbar">
-        <div class="who">
-          <img src="assets/QIjUt.jpg" alt="avatar" />
-          <div>
-            <h1 id="topName">김지현 관점방🎖</h1>
-            <span id="topMeta"></span>
-          </div>
-        </div>
-        <a class="join" id="joinBtn" href="#" target="_blank" rel="noopener">채널 입장</a>
-      </header>
-
-      <div class="hero">
-        <img src="assets/Ijzi1.jpg" alt="배너 1920x1080" width="1920" height="1080" />
-        <div class="hero-mask">
-          <div class="hero-copy">
-            <h2 id="heroName">김지현 관점방🎖</h2>
-            <p id="heroText"></p>
-            <div class="pills" id="pills"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="feed" id="feed"></div>
-
-      <div class="footer-bar">
-        <p id="footerText"></p>
-        <a class="join gold" id="footerBtn" href="#" target="_blank" rel="noopener">텔레그램에서 보기</a>
-      </div>
-    </section>
+      <div class="icon-btn">🔍</div>
+      <div class="icon-btn">⋮</div>
+    </header>
+    <div class="feed" id="feed"></div>
+    <footer class="join">
+      <a id="join" href="#" target="_blank" rel="noopener">채널 들어가기</a>
+      <span class="gift">🎁</span>
+    </footer>
   </div>
-
   <script src="chats.js"></script>
   <script>
     (function () {
       var S = window.SITE || {};
       var list = window.CHATS || [];
-
-      function setText(id, value) {
-        var el = document.getElementById(id);
-        if (el && value != null) el.textContent = value;
-      }
-
+      var KEY = "tg-react-v1";
+      function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } }
+      function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
+      var store = load();
+      document.getElementById("name").textContent = S.channelName || "";
+      document.getElementById("badge").textContent = S.badge || "";
+      document.getElementById("subs").textContent = S.subscribers || "";
+      document.getElementById("winTitle").textContent = S.channelName || "";
       document.title = S.channelName || document.title;
-      setText("sideName", S.channelName);
-      setText("sideDesc", S.description);
-      setText("sideYt", S.youtubeName);
-      setText("sideYtMeta", S.youtubeMeta);
-      setText("topName", S.channelName);
-      setText("topMeta", (S.subscribers || "") + (S.username ? " · " + S.username : ""));
-      setText("heroName", S.channelName);
-      setText("heroText", S.heroText);
-      setText("footerText", S.footerText);
-
-      var joinBtn = document.getElementById("joinBtn");
-      var footerBtn = document.getElementById("footerBtn");
-      if (joinBtn) {
-        joinBtn.href = S.joinUrl || "#";
-        joinBtn.textContent = S.joinLabel || "채널 입장";
+      if (S.avatar) document.getElementById("avatar").src = S.avatar;
+      var join = document.getElementById("join");
+      join.href = S.joinUrl || "#";
+      join.textContent = S.joinLabel || "채널 들어가기";
+      function linkify(text) { return String(text).replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
+      function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+      function getState(post) {
+        var s = store[post.id] || {};
+        if (s.viewsSeen !== true) {
+          s.viewsSeen = true;
+          s.views = (post.views || 0) + 1;
+          store[post.id] = s;
+          save(store);
+        }
+        return {
+          heartOn: !!s.heartOn,
+          likeOn: !!s.likeOn,
+          hearts: (post.hearts || 0) + (s.heartOn ? 1 : 0),
+          likes: (post.likes || 0) + (s.likeOn ? 1 : 0),
+          views: s.views || post.views || 0
+        };
       }
-      if (footerBtn) {
-        footerBtn.href = S.joinUrl || "#";
-        footerBtn.textContent = S.footerButton || "텔레그램에서 보기";
-      }
-
-      var pills = document.getElementById("pills");
-      if (pills && S.pills) {
-        pills.innerHTML = S.pills.map(function (p) {
-          return '<span class="pill">' + p + "</span>";
+      function render() {
+        document.getElementById("feed").innerHTML = list.map(function (item) {
+          if (item.type === "date") return '<div class="date-chip"><span>' + esc(item.text) + "</span></div>";
+          var st = getState(item);
+          var yt = "";
+          if (item.youtube) {
+            yt = '<a class="yt" href="' + esc(item.youtube.url) + '" target="_blank" rel="noopener">' +
+              '<div class="meta"><small>' + esc(item.youtube.label || "YouTube") + "</small>" +
+              "<b>" + esc(item.youtube.title || "") + "</b><p>" + esc(item.youtube.desc || "") + "</p></div>" +
+              '<div class="thumb"><img src="' + esc(item.youtube.thumb) + '" alt="썸네일" width="1920" height="1080" /><div class="play">▶</div></div></a>';
+          }
+          return '<article class="msg" data-id="' + esc(item.id) + '">' +
+            '<div class="author">' + esc(S.channelName || "") + (S.badge ? " " + S.badge : "") + "</div>" +
+            '<div class="txt">' + linkify(esc(item.text || "")) + "</div>" +
+            (item.disclaimer ? '<div class="disc">' + esc(item.disclaimer) + "</div>" : "") + yt +
+            '<div class="row"><div class="reacts">' +
+              '<button class="chip' + (st.heartOn ? " on" : "") + '" data-kind="heart">❤ ' + st.hearts + "</button>" +
+              '<button class="chip' + (st.likeOn ? " on" : "") + '" data-kind="like">👍 ' + st.likes + "</button>" +
+            '</div><div class="meta-right">👁 ' + st.views + " &nbsp;" + esc(item.time || "") + "</div></div></article>";
         }).join("");
       }
-
-      var feed = document.getElementById("feed");
-      if (!feed) return;
-
-      feed.innerHTML = list.map(function (item) {
-        if (item.type === "notice") {
-          return '<div class="notice">' + escapeHtml(item.text || "") + "</div>";
-        }
-        if (item.type === "date") {
-          return '<p class="date-sep"><span>' + escapeHtml(item.text || "") + "</span></p>";
-        }
-        if (item.type === "links") {
-          return (
-            '<div class="links">' +
-              '<a class="card-link" href="' + (S.joinUrl || "#") + '" target="_blank" rel="noopener">' +
-                '<img src="assets/QIjUt.jpg" alt="TG" style="width:56px;height:56px;border-radius:50%;object-fit:cover" />' +
-                "<div><strong>텔레그램 채널 입장</strong><span>" + escapeHtml(S.joinUrl || "") + "</span></div>" +
-              "</a>" +
-              '<a class="card-link" href="' + (S.youtubeUrl || "#") + '" target="_blank" rel="noopener">' +
-                '<img src="assets/Ijzi1.jpg" alt="YT" style="width:56px;height:56px;border-radius:12px;object-fit:cover" />' +
-                "<div><strong>" + escapeHtml(S.youtubeName || "유튜브") + "</strong><span>" + escapeHtml(S.youtubeMeta || "") + "</span></div>" +
-              "</a>" +
-            "</div>"
-          );
-        }
-
-        var img = item.image
-          ? '<img class="shot" src="' + item.image + '" alt="' + escapeHtml(item.imageAlt || "") + '" width="1920" height="1080" />'
-          : "";
-        var reacts = (item.reactions || []).map(function (r) {
-          return "<b>" + escapeHtml(r) + "</b>";
-        }).join("");
-
-        return (
-          '<div class="post' + (item.pinned ? " pin" : "") + '">' +
-            '<div class="meta">' + escapeHtml(item.author || S.channelName || "") +
-              "<em>" + escapeHtml(item.time || "") + "</em></div>" +
-            '<div class="txt">' + escapeHtml(item.text || "") + "</div>" +
-            img +
-            (reacts ? '<div class="react">' + reacts + "</div>" : "") +
-          "</div>"
-        );
-      }).join("");
-
-      function escapeHtml(str) {
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
-      }
+      document.getElementById("feed").addEventListener("click", function (e) {
+        var btn = e.target.closest(".chip");
+        if (!btn) return;
+        var id = btn.closest(".msg").getAttribute("data-id");
+        var kind = btn.getAttribute("data-kind");
+        store[id] = store[id] || {};
+        if (kind === "heart") store[id].heartOn = !store[id].heartOn;
+        if (kind === "like") store[id].likeOn = !store[id].likeOn;
+        save(store);
+        render();
+      });
+      render();
+      if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(function () {});
     })();
   </script>
 </body>

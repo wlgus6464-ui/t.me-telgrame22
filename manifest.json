@@ -1,0 +1,16 @@
+{
+  "name": "김지현 관점방",
+  "short_name": "관점방",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#17212b",
+  "theme_color": "#17212b",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "assets/avatar.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg"
+    }
+  ]
+}
