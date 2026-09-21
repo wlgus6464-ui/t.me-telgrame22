@@ -68,9 +68,24 @@
     .yt .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 58px; height: 40px; border-radius: 10px; background: #ff0000; color: #fff; display: grid; place-items: center; font-size: 18px; }
     .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 8px; }
     .reacts { display: flex; gap: 6px; }
-    .chip { border: 0; background: var(--chip); color: #e8eef3; border-radius: 16px; padding: 4px 9px; font-size: 13px; cursor: pointer; font-family: inherit; }
+    .chip { border: 0; background: var(--chip); color: #e8eef3; border-radius: 16px; padding: 4px 9px; font-size: 13px; cursor: pointer; font-family: inherit; position: relative; }
     .chip.on { background: #2b5278; box-shadow: inset 0 0 0 1px rgba(90,170,230,.45); }
+    .chip.pulse { animation: pulse .28s ease; }
+    @keyframes pulse { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
     .meta-right { color: #7f8f9c; font-size: 12px; display: flex; align-items: center; gap: 6px; white-space: nowrap; padding-bottom: 2px; }
+    .side-emoji { font-size: 16px; margin-left: 4px; animation: popin .25s ease; }
+    @keyframes popin { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .burst-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+    .spark {
+      position: fixed; pointer-events: none; border-radius: 50%;
+      animation: fly var(--d) cubic-bezier(.12,.7,.3,1) forwards;
+    }
+    .spark.emoji { background: none; border-radius: 0; font-size: 14px; line-height: 1; }
+    @keyframes fly {
+      0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+      70% { opacity: 1; }
+      100% { transform: translate(var(--x), var(--y)) scale(0) rotate(var(--r)); opacity: 0; }
+    }
     footer.join { background: var(--header); border-top: 1px solid #243140; height: 54px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
     footer.join a { color: var(--blue); font-size: 16px; font-weight: 600; text-decoration: none; }
     footer.join .gift { position: absolute; right: 16px; color: #7d8b97; font-size: 20px; }
@@ -98,6 +113,7 @@
       <span class="gift">🎁</span>
     </footer>
   </div>
+  <div class="burst-layer" id="burst"></div>
   <script src="chats.js"></script>
   <script>
     (function () {
@@ -152,8 +168,46 @@
             '<div class="row"><div class="reacts">' +
               '<button class="chip' + (st.heartOn ? " on" : "") + '" data-kind="heart">❤ ' + st.hearts + "</button>" +
               '<button class="chip' + (st.likeOn ? " on" : "") + '" data-kind="like">👍 ' + st.likes + "</button>" +
-            '</div><div class="meta-right">👁 ' + st.views + " &nbsp;" + esc(item.time || "") + "</div></div></article>";
+            '</div><div class="meta-right">👁 ' + st.views + " &nbsp;" + esc(item.time || "") +
+              (st.heartOn ? '<span class="side-emoji">❤</span>' : "") +
+              (st.likeOn ? '<span class="side-emoji">👍</span>' : "") +
+            "</div></div></article>";
         }).join("");
+      }
+      function burst(el, kind, turningOn) {
+        var layer = document.getElementById("burst");
+        if (!layer) return;
+        var r = el.getBoundingClientRect();
+        var cx = r.left + r.width / 2;
+        var cy = r.top + r.height / 2;
+        var colors = kind === "heart"
+          ? ["#ff4d6d", "#ff8fab", "#2ee6a6", "#5ad2ff", "#ffd166", "#c77dff"]
+          : ["#ffd166", "#ffe566", "#2ee6a6", "#5ad2ff", "#ff8fab", "#ffffff"];
+        var emojis = kind === "heart" ? ["❤", "💗", "✨"] : ["👍", "✨", "💛"];
+        var n = turningOn ? 28 : 10;
+        for (var i = 0; i < n; i++) {
+          var p = document.createElement("span");
+          var isEmoji = i % 5 === 0;
+          p.className = "spark" + (isEmoji ? " emoji" : "");
+          var ang = (Math.PI * 2 * i) / n + Math.random() * 0.4;
+          var dist = 36 + Math.random() * (turningOn ? 70 : 36);
+          p.style.left = cx + "px";
+          p.style.top = cy + "px";
+          p.style.setProperty("--x", Math.cos(ang) * dist + "px");
+          p.style.setProperty("--y", Math.sin(ang) * dist + "px");
+          p.style.setProperty("--r", (Math.random() * 240 - 120) + "deg");
+          p.style.setProperty("--d", (0.45 + Math.random() * 0.45) + "s");
+          if (isEmoji) {
+            p.textContent = emojis[i % emojis.length];
+          } else {
+            var size = 4 + Math.random() * 6;
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.background = colors[i % colors.length];
+          }
+          layer.appendChild(p);
+          setTimeout(function (node) { node.remove(); }, 900, p);
+        }
       }
       document.getElementById("feed").addEventListener("click", function (e) {
         var btn = e.target.closest(".chip");
@@ -161,10 +215,17 @@
         var id = btn.closest(".msg").getAttribute("data-id");
         var kind = btn.getAttribute("data-kind");
         store[id] = store[id] || {};
-        if (kind === "heart") store[id].heartOn = !store[id].heartOn;
-        if (kind === "like") store[id].likeOn = !store[id].likeOn;
+        var nextOn = kind === "heart" ? !store[id].heartOn : !store[id].likeOn;
+        burst(btn, kind, nextOn);
+        if (kind === "heart") store[id].heartOn = nextOn;
+        if (kind === "like") store[id].likeOn = nextOn;
         save(store);
         render();
+        var again = document.querySelector('.msg[data-id="' + id + '"] .chip[data-kind="' + kind + '"]');
+        if (again) {
+          again.classList.add("pulse");
+          setTimeout(function () { again.classList.remove("pulse"); }, 280);
+        }
       });
       render();
       if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(function () {});
