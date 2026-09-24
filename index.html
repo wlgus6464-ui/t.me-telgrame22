@@ -65,7 +65,7 @@
     .yt .meta p { color: #9aafbf; font-size: 13px; white-space: pre-wrap; }
     .yt .thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; }
     .yt .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .yt .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 58px; height: 40px; border-radius: 10px; background: #ff0000; color: #fff; display: grid; place-items: center; font-size: 18px; }
+    .yt .play { display: none; }
     .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 8px; }
     .reacts { display: flex; gap: 6px; }
     .chip { border: 0; background: var(--chip); color: #e8eef3; border-radius: 16px; padding: 4px 9px; font-size: 13px; cursor: pointer; font-family: inherit; position: relative; }
@@ -159,7 +159,7 @@
             yt = '<a class="yt" href="' + esc(item.youtube.url) + '" target="_blank" rel="noopener">' +
               '<div class="meta"><small>' + esc(item.youtube.label || "YouTube") + "</small>" +
               "<b>" + esc(item.youtube.title || "") + "</b><p>" + esc(item.youtube.desc || "") + "</p></div>" +
-              '<div class="thumb"><img src="' + esc(item.youtube.thumb) + '" alt="썸네일" width="1920" height="1080" /><div class="play">▶</div></div></a>';
+              '<div class="thumb"><img src="' + esc(item.youtube.thumb) + '" alt="썸네일" width="1920" height="1080" /></div></a>';
           }
           return '<article class="msg" data-id="' + esc(item.id) + '">' +
             '<div class="author">' + esc(S.channelName || "") + (S.badge ? " " + S.badge : "") + "</div>" +
