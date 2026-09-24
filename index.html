@@ -21,7 +21,7 @@
       --chip: #25303d;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; background: #0b0f14; color: var(--text); font-family: "Noto Sans KR", "Segoe UI", sans-serif; }
+    html, body { height: 100%; background: #0b0f14; color: var(--text); font-family: "Noto Sans KR", "Segoe UI", sans-serif; overflow: hidden; }
     body { display: grid; place-items: center; }
     .app-window {
       width: min(430px, 100vw);
@@ -160,7 +160,7 @@
       pointer-events: none;
       white-space: pre-wrap;
       word-break: break-word;
-      text-align: right;
+      text-align: left;
       color: #e7ebee;
       font-family: "Noto Sans KR", "Segoe UI", sans-serif;
       font-size: 15px;
@@ -176,7 +176,7 @@
       background: transparent;
       color: transparent;
       caret-color: #e7ebee;
-      text-align: right;
+      text-align: left;
       font-family: "Noto Sans KR", "Segoe UI", sans-serif;
       font-size: 15px;
       font-weight: 300;
@@ -385,7 +385,7 @@
           return '<article class="msg" data-id="' + esc(item.id) + '">' +
             '<div class="author">' + esc(S.channelName || "") + (S.badge ? " " + S.badge : "") + "</div>" +
             photos +
-            '<div class="txt">' + maskHtml(item.text || "") + "</div>" +
+            '<div class="txt">' + (item.live ? maskHtml(item.text || "") : linkify(esc(item.text || ""))) + "</div>" +
             (item.disclaimer ? '<div class="disc">' + esc(item.disclaimer) + "</div>" : "") + yt +
             '<div class="row"><div class="reacts">' +
               '<button class="chip' + (st.heartOn ? " on" : "") + '" data-kind="heart">' + HEART_ICON + " " + st.hearts + "</button>" +
@@ -476,6 +476,8 @@
       }
       function stickBottom() {
         var feed = document.getElementById("feed");
+        var last = feed.lastElementChild;
+        if (last && last.scrollIntoView) last.scrollIntoView(false);
         feed.scrollTop = feed.scrollHeight;
       }
       function grow() {
@@ -485,7 +487,7 @@
         paintMirror();
       }
       function openEmoji() { emojiPop.classList.toggle("open"); }
-      draft.addEventListener("input", function () { syncSend(); grow(); });
+      draft.addEventListener("input", function () { syncSend(); grow(); stickBottom(); });
       draft.addEventListener("scroll", paintMirror);
       document.getElementById("emojiBtn").addEventListener("click", openEmoji);
       document.getElementById("emojiIdle").addEventListener("click", openEmoji);
