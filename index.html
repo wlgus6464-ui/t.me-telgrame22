@@ -514,8 +514,7 @@
         paintMirror();
       }
       function openEmoji() { emojiPop.classList.toggle("open"); }
-      draft.addEventListener("focus", function () { stickBottom(); });
-      draft.addEventListener("input", function () { syncSend(); grow(); stickBottom(); });
+      draft.addEventListener("input", function () { syncSend(); grow(); });
       draft.addEventListener("scroll", paintMirror);
       document.getElementById("emojiBtn").addEventListener("click", openEmoji);
       document.getElementById("emojiIdle").addEventListener("click", openEmoji);
