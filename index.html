@@ -218,7 +218,7 @@
       <div class="back">‹</div>
       <img class="avatar" id="avatar" src="assets/avatar.jpg" alt="프로필" />
       <div class="who">
-        <h1><span id="name">김지현 관점방</span><span id="badge">🎖</span></h1>
+        <h1><span id="name">김지현 관점방</span><span id="badge"></span></h1>
         <p id="subs">구독자 11,786명</p>
       </div>
       <div class="icon-btn" aria-label="검색">
@@ -307,6 +307,15 @@
           views: s.views || post.views || 0
         };
       }
+      function photoHtml(src) {
+        if (String(src).indexOf("data:") === 0) return '<img src="' + src + '" alt="" />';
+        var base = String(src).replace(/\.(png|jpe?g|webp|gif)$/i, "");
+        var tries = [src];
+        [".png", ".PNG", ".jpg", ".JPG", ".jpeg", ".JPEG", ".webp"].forEach(function (ext) {
+          if (tries.indexOf(base + ext) < 0) tries.push(base + ext);
+        });
+        return '<img src="' + esc(tries[0]) + '" data-try="' + esc(tries.slice(1).join("|")) + '" alt="" onerror="var n=(this.getAttribute(\'data-try\')||\'\').split(\'|\').filter(Boolean);if(!n.length){this.style.display=\'none\';return;}this.setAttribute(\'data-try\',n.slice(1).join(\'|\'));this.src=n[0];" />';
+      }
       function render() {
         document.getElementById("feed").innerHTML = list.map(function (item) {
           if (item.type === "date") return '<div class="date-chip"><span>' + esc(item.text) + "</span></div>";
@@ -314,9 +323,7 @@
           var photos = "";
           var imgs = item.images || (item.image ? [item.image] : []);
           if (imgs.length) {
-            photos = '<div class="photos">' + imgs.map(function (src) {
-              return '<img src="' + esc(src) + '" alt="" onerror="if(!this.dataset.alt){this.dataset.alt=1;var s=this.getAttribute(\'src\');this.src=/\\.png$/i.test(s)?s.replace(/\\.png$/i,\'.PNG\'):s.replace(/\\.PNG$/i,\'.png\');}" />';
-            }).join("") + "</div>";
+            photos = '<div class="photos">' + imgs.map(photoHtml).join("") + "</div>";
           }
           var yt = "";
           if (item.youtube) {
@@ -474,7 +481,7 @@
         if (!list.some(function (it) { return it.id === "day-" + today; }) ) {
           /* date chips from this session are not stored; re-add if needed on load */
         }
-        localStorage.setItem(LIVE, JSON.stringify(saved));
+        try { localStorage.setItem(LIVE, JSON.stringify(saved)); } catch (e) {}
         draft.value = "";
         pendingImage = "";
         filePick.value = "";
