@@ -450,8 +450,14 @@
         post._reactArmed = true;
         function loop(key) {
           setTimeout(function () {
-            post[key] = (post[key] || 0) + 1 + Math.floor(Math.random() * 9);
-            paintReacts(post);
+            var cap = Math.floor((post.views || 0) / 2);
+            var st = getState(post);
+            var room = cap - (st.hearts + st.likes);
+            if (room > 0) {
+              var add = 1 + Math.floor(Math.random() * Math.min(9, room));
+              post[key] = (post[key] || 0) + add;
+              paintReacts(post);
+            }
             loop(key);
           }, (1 + Math.floor(Math.random() * 9)) * 1000);
         }
