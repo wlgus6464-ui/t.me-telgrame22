@@ -323,18 +323,12 @@
       function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
       function getState(post) {
         var s = store[post.id] || {};
-        if (s.viewsSeen !== true) {
-          s.viewsSeen = true;
-          s.views = (post.views || 0) + 1;
-          store[post.id] = s;
-          save(store);
-        }
         return {
           heartOn: !!s.heartOn,
           likeOn: !!s.likeOn,
           hearts: (post.hearts || 0) + (s.heartOn ? 1 : 0),
           likes: (post.likes || 0) + (s.likeOn ? 1 : 0),
-          views: s.views || post.views || 0
+          views: post.views || 0
         };
       }
       function photoHtml(src) {
