@@ -73,12 +73,12 @@
       background: var(--bubble);
       clip-path: path("M0 2 C1 14 8 24 20 28 L0 28 Z");
     }
-    .msg .author { color: var(--blue); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .msg .author { color: var(--blue); font-size: 14px; font-weight: 700; margin-bottom: 6px; text-align: right; }
     .photos { margin: 6px -12px 8px; }
     .photos img { width: 100%; display: block; max-height: 360px; object-fit: cover; }
-    .msg .txt { font-size: 15px; font-weight: 300; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+    .msg .txt { font-size: 15px; font-weight: 300; line-height: 1.55; white-space: pre-wrap; word-break: break-word; text-align: right; }
     .msg .txt a { color: var(--link); text-decoration: none; }
-    .msg .disc { margin-top: 12px; font-size: 14px; font-weight: 400; font-style: italic; color: #d7e0e8; line-height: 1.5; }
+    .msg .disc { margin-top: 12px; font-size: 14px; font-weight: 400; font-style: italic; color: #d7e0e8; line-height: 1.5; text-align: right; }
     .yt { margin-top: 10px; border-left: 3px solid #7b5cff; background: #1b2836; border-radius: 0 8px 8px 0; overflow: hidden; display: block; color: inherit; text-decoration: none; }
     .yt .meta { padding: 8px 10px 6px; }
     .yt .meta small { color: #8b9aa8; font-size: 12px; }
@@ -413,14 +413,18 @@
         if (kind === "heart") store[id].heartOn = nextOn;
         if (kind === "like") store[id].likeOn = nextOn;
         save(store);
-        var feed = document.getElementById("feed");
-        var keep = feed.scrollTop;
-        render();
-        feed.scrollTop = keep;
-        var again = document.querySelector('.msg[data-id="' + id + '"] .chip[data-kind="' + kind + '"]');
-        if (again) {
-          again.classList.add("pulse");
-          setTimeout(function () { again.classList.remove("pulse"); }, 280);
+        var post = null;
+        for (var i = 0; i < list.length; i++) if (list[i].id === id) post = list[i];
+        if (post) {
+          var st = getState(post);
+          var heartBtn = btn.parentNode.querySelector('[data-kind="heart"]');
+          var likeBtn = btn.parentNode.querySelector('[data-kind="like"]');
+          heartBtn.classList.toggle("on", st.heartOn);
+          likeBtn.classList.toggle("on", st.likeOn);
+          heartBtn.textContent = HEART_ICON + " " + st.hearts;
+          likeBtn.textContent = LIKE_ICON + " " + st.likes;
+          btn.classList.add("pulse");
+          setTimeout(function () { btn.classList.remove("pulse"); }, 280);
         }
       });
       render();
