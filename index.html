@@ -59,9 +59,9 @@
       background: var(--bubble);
       border-radius: 14px 14px 3px 14px;
       padding: 10px 12px 8px;
-      margin: 0 20px 10px 10%;
-      max-width: 90%;
-      width: auto;
+      margin: 0 16px 10px auto;
+      max-width: 72%;
+      width: fit-content;
     }
     .msg::after {
       content: "";
@@ -413,7 +413,10 @@
         if (kind === "heart") store[id].heartOn = nextOn;
         if (kind === "like") store[id].likeOn = nextOn;
         save(store);
+        var feed = document.getElementById("feed");
+        var keep = feed.scrollTop;
         render();
+        feed.scrollTop = keep;
         var again = document.querySelector('.msg[data-id="' + id + '"] .chip[data-kind="' + kind + '"]');
         if (again) {
           again.classList.add("pulse");
