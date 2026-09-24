@@ -4,9 +4,9 @@
    ========================================================= */
 
 window.SITE = {
-  channelName: "김지현 관점방",
+  channelName: "구독자 무료추천⚠️",
   badge: "",
-  subscribers: "구독자 11,786명",
+  subscribers: "구독자 786명",
   joinUrl: "https://t.me/nostradamousbtc",
   joinLabel: "채널 들어가기",
   avatar: "assets/avatar.jpg"
@@ -18,12 +18,12 @@ window.CHATS = [
   {
     id: "post-1",
     type: "post",
-    image: "assets/1.PNG",
-    text: "호가창만 봐도 위아래 힘겨루기입니다.\n오늘은 관전 모드로 가겠습니다.",
-    disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
+    image: "",
+    text: "종목명 : 멀티버스엑스 (EGLD)\n거래소 : 업비트 , 빗썸\n매수가 : 5,000~5,100원\n매도가 : 10,000원 (100% 상승 예상)",
+    disclaimer: "",
     hearts: 55,
     likes: 6,
-    views: 1640,
+    views: 740,
     time: "오후 3:09"
   },
 
@@ -31,11 +31,11 @@ window.CHATS = [
   {
     id: "post-2",
     type: "post",
-    image: "assets/2.PNG",
-    text: "휴대폰으로 봐도 방향은 같습니다.\n돌파 확인하고 따라가는 게 속 편합니다.",
+    image: "",
+    text: "종목명 : 닐리온 (NIL)\n거래소 : 빗썸\n매수가 : 56원~57원\n매도가 : 200원 (250% 상승 예상)",
     hearts: 84,
     likes: 8,
-    views: 2103,
+    views: 703,
     time: "오후 8:17"
   },
 
@@ -44,22 +44,22 @@ window.CHATS = [
     id: "post-3",
     type: "post",
     image: "assets/3.PNG",
-    text: "오늘은 짧게.\n자리 안 주면 그냥 쉽니다.",
-    hearts: 61,
-    likes: 5,
-    views: 3216,
-    time: "오후 11:56"
+    text: "멀티버스엑스 9월 17일 추천 이후로 100% 상승 나왔습니다.\n수익보신분들 축하드리고, 도움되셨다면 하트 한번씩 눌러주세요!",
+    hearts: 201,
+    likes: 55,
+    views: 706,
+    time: "오후 1:56"
   },
 
   { id: "day-920", type: "date", text: "9월 20일" },
   {
     id: "post-4",
     type: "post",
-    image: "assets/4.PNG",
-    text: "주봉으로 보면 큰 그림은 아직 안 깨졌습니다.\n6만 5천 부근을 기준선으로 보겠습니다.",
+    image: "",
+    text: "종목명 : 비쓰리 (B3)\n거래소 : 업비트 , 빗썸\n매수가 : 0.78원~0.8원\n매도가 : 1.3원 (70% 상승 예상)",
     hearts: 127,
     likes: 19,
-    views: 3537,
+    views: 737,
     time: "오후 5:44"
   },
 
@@ -68,11 +68,11 @@ window.CHATS = [
     id: "post-5",
     type: "post",
     image: "assets/5.PNG",
-    text: "파동 카운트는 사람마다 다릅니다.\n제 기준은 지금 4파 조정으로 보고 있습니다.",
-    disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
-    hearts: 93,
+    text: "종목명 : 메타플렉스 (MPLX)\n거래소 : 빗썸\n매수가 : 45원~46원\n매도가 : 90원 (100% 상승 예상)",
+    disclaimer: "",
+    hearts: 193,
     likes: 14,
-    views: 2541,
+    views: 541,
     time: "오후 7:21"
   },
 
@@ -80,34 +80,34 @@ window.CHATS = [
   {
     id: "post-6",
     type: "post",
-    image: "assets/6.PNG",
-    text: "라이브 들어와 주신 분들 감사합니다.\n앞으로 자주 뵙도록 하겠습니다~\n\n굿밤입니다.",
+    image: "",
+    text: "오늘은 큰 상승이 나올 코인의 자리가 안보이네요,,,\n하루정도는 매매 쉬어가도 되겠습니다^^\n굿밤되시길 바랍니다.",
     hearts: 104,
-    likes: 0,
-    views: 3267,
-    time: "오후 11:56"
+    likes: 60,
+    views: 267,
+    time: "오후 10:56"
   },
 
   { id: "day-923", type: "date", text: "9월 23일" },
   {
     id: "post-7",
     type: "post",
-    image: "assets/7.PNG",
-    text: "이더랑 비트 같이 보면 결이 비슷합니다.\n둘 다 저항 앞이라 성급하게 안 들어갑니다.",
-    hearts: 76,
-    likes: 9,
-    views: 1766,
+    image: "assets/1.PNG",
+    text: "비쓰리 9월 20일 추천 이후로 약 65% 이상 상승나왔습니다.\n수익보신분들 축하드립니다!\n수익보셨다면 다들 하트한번씩~~",
+    hearts: 316,
+    likes: 109,
+    views: 766,
     time: "오후 4:02"
   },
   {
     id: "post-8",
     type: "post",
-    image: "assets/8.PNG",
-    text: "밤에 차트 켜놓고 멍 때리다가 한 장 남깁니다.\n\n자리는 항상 주면 먹고, 안 주면 쉬는 겁니다.",
-    hearts: 141,
-    likes: 19,
-    views: 3320,
-    time: "오후 11:48"
+    image: "assets/2.PNG",
+    text: "21일 추천드린 메타플렉스도 크게 상승하고이쎈요.\n다들 축하드립니다!",
+    hearts: 341,
+    likes: 119,
+    views: 720,
+    time: "오후 6:48"
   },
 
   { id: "day-924", type: "date", text: "9월 24일" },
@@ -115,22 +115,10 @@ window.CHATS = [
     id: "post-9",
     type: "post",
     image: "assets/9.PNG",
-    text: "차트만 보면 반등은 나온 자리입니다.\n\n다만 거래량이 따라오는지가 핵심이에요.",
-    hearts: 88,
-    likes: 11,
-    views: 1984,
-    time: "오전 10:12"
+    text: "모두들 즐거운 한가위 보내세요~!\n오늘 오후 4~5시경 코인추천 드리겠습니다.",
+    hearts: 388,
+    likes: 111,
+    views: 684,
+    time: "오전 11:12"
   },
-  {
-    id: "post-10",
-    type: "post",
-    image: "assets/10.PNG",
-    text: "오늘 장 보면서 노란선 기준으로만 보겠습니다.\n\n위로 가면 추격, 아래로 가면 관망입니다.",
-    disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
-    hearts: 102,
-    likes: 7,
-    views: 2150,
-    time: "오후 12:35"
-  }
 
-];
