@@ -2,7 +2,6 @@
    채팅 수정 파일 — 이 파일만 고치면 화면 글이 바뀝니다.
    사진: assets/1.png ~ assets/10.png (위에서부터 1번)
    ========================================================= */
-
 window.SITE = {
   channelName: "구독자 무료추천⚠️",
   badge: "",
@@ -11,9 +10,7 @@ window.SITE = {
   joinLabel: "채널 들어가기",
   avatar: "assets/avatar.jpg"
 };
-
 window.CHATS = [
-
   { id: "day-917", type: "date", text: "9월 17일" },
   {
     id: "post-1",
@@ -26,7 +23,6 @@ window.CHATS = [
     views: 740,
     time: "오후 3:09"
   },
-
   { id: "day-918", type: "date", text: "9월 18일" },
   {
     id: "post-2",
@@ -38,7 +34,6 @@ window.CHATS = [
     views: 703,
     time: "오후 8:17"
   },
-
   { id: "day-919", type: "date", text: "9월 19일" },
   {
     id: "post-3",
@@ -50,7 +45,6 @@ window.CHATS = [
     views: 706,
     time: "오후 1:56"
   },
-
   { id: "day-920", type: "date", text: "9월 20일" },
   {
     id: "post-4",
@@ -62,7 +56,6 @@ window.CHATS = [
     views: 737,
     time: "오후 5:44"
   },
-
   { id: "day-921", type: "date", text: "9월 21일" },
   {
     id: "post-5",
@@ -75,7 +68,6 @@ window.CHATS = [
     views: 541,
     time: "오후 7:21"
   },
-
   { id: "day-922", type: "date", text: "9월 22일" },
   {
     id: "post-6",
@@ -87,7 +79,6 @@ window.CHATS = [
     views: 267,
     time: "오후 10:56"
   },
-
   { id: "day-923", type: "date", text: "9월 23일" },
   {
     id: "post-7",
@@ -109,7 +100,6 @@ window.CHATS = [
     views: 720,
     time: "오후 6:48"
   },
-
   { id: "day-924", type: "date", text: "9월 24일" },
   {
     id: "post-9",
@@ -120,5 +110,5 @@ window.CHATS = [
     likes: 111,
     views: 684,
     time: "오전 11:12"
-  },
-
+  }
+];
