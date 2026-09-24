@@ -53,7 +53,7 @@
     .feed { flex: 1; overflow-y: auto; padding: 10px 8px 12px; background: var(--bg); }
     .feed::-webkit-scrollbar { width: 0; }
     .date-chip { display: flex; justify-content: center; margin: 10px 0 14px; }
-    .date-chip span { background: #1c2a38; color: #d5dee6; font-size: 13px; padding: 5px 12px; border-radius: 20px; }
+    .date-chip span { background: #1c2a38; color: #ffffff; font-size: 14px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
     .msg {
       position: relative;
       background: var(--bubble);
@@ -76,9 +76,9 @@
     .msg .author { color: var(--blue); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
     .photos { margin: 6px -12px 8px; }
     .photos img { width: 100%; display: block; max-height: 360px; object-fit: cover; }
-    .msg .txt { font-size: 15px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+    .msg .txt { font-size: 15px; font-weight: 400; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
     .msg .txt a { color: var(--link); text-decoration: none; }
-    .msg .disc { margin-top: 12px; font-size: 14px; font-style: italic; color: #d7e0e8; line-height: 1.5; }
+    .msg .disc { margin-top: 12px; font-size: 14px; font-weight: 400; font-style: italic; color: #d7e0e8; line-height: 1.5; }
     .yt { margin-top: 10px; border-left: 3px solid #7b5cff; background: #1b2836; border-radius: 0 8px 8px 0; overflow: hidden; display: block; color: inherit; text-decoration: none; }
     .yt .meta { padding: 8px 10px 6px; }
     .yt .meta small { color: #8b9aa8; font-size: 12px; }
@@ -125,9 +125,87 @@
       70% { opacity: 1; }
       100% { transform: translate(var(--x), var(--y)) scale(0) rotate(var(--r)); opacity: 0; }
     }
-    footer.join { background: var(--header); border-top: 1px solid #243140; height: 54px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
-    footer.join a { color: var(--blue); font-size: 16px; font-weight: 600; text-decoration: none; }
-    footer.join .gift { position: absolute; right: 16px; color: #7d8b97; font-size: 20px; }
+    footer.composer {
+      background: #17212b;
+      border-top: 1px solid #0e1621;
+      min-height: 54px;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      padding: 6px 6px 8px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .c-btn {
+      width: 40px;
+      height: 42px;
+      border: 0;
+      background: transparent;
+      color: #8d9aa6;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .c-btn svg { width: 24px; height: 24px; display: block; }
+    .box {
+      flex: 1;
+      min-width: 0;
+      background: #242f3d;
+      border-radius: 20px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      padding: 0 4px 0 14px;
+    }
+    .box textarea {
+      flex: 1;
+      border: 0;
+      resize: none;
+      background: transparent;
+      color: #fff;
+      font: 16px/1.35 "Noto Sans KR", "Segoe UI", sans-serif;
+      max-height: 120px;
+      padding: 10px 0;
+      outline: none;
+    }
+    .box textarea::placeholder { color: #7f8c98; }
+    .emoji-pop {
+      position: absolute;
+      right: 48px;
+      bottom: 58px;
+      background: #1c2733;
+      border-radius: 12px;
+      padding: 8px;
+      display: none;
+      gap: 4px;
+      flex-wrap: wrap;
+      width: 220px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      z-index: 5;
+    }
+    .emoji-pop.open { display: flex; }
+    .emoji-pop button {
+      border: 0;
+      background: transparent;
+      font-size: 22px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+    }
+    .attach-preview {
+      position: absolute;
+      left: 12px;
+      bottom: 58px;
+      background: #1c2733;
+      border-radius: 10px;
+      padding: 6px;
+      display: none;
+      z-index: 5;
+    }
+    .attach-preview.open { display: block; }
+    .attach-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; display: block; }
   </style>
 </head>
 <body>
@@ -158,9 +236,35 @@
       </div>
     </header>
     <div class="feed" id="feed"></div>
-    <footer class="join">
-      <a id="join" href="#" target="_blank" rel="noopener">채널 들어가기</a>
-      <span class="gift">🎁</span>
+    <footer class="composer">
+      <div class="attach-preview" id="attachPreview"><img id="attachImg" alt="" /></div>
+      <div class="emoji-pop" id="emojiPop"></div>
+      <button class="c-btn" id="clipBtn" type="button" aria-label="첨부">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 12.5l6.2-6.2a3.2 3.2 0 114.5 4.5L10.2 19.3a4.6 4.6 0 01-6.5-6.5l8.4-8.4"></path>
+        </svg>
+      </button>
+      <input id="filePick" type="file" accept="image/*" hidden />
+      <div class="box">
+        <textarea id="draft" rows="1" placeholder="메시지 작성..."></textarea>
+        <button class="c-btn" id="emojiBtn" type="button" aria-label="이모지">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="8.2"></circle>
+            <path d="M8.6 14.2c.9 1.3 2.1 1.9 3.4 1.9s2.5-.6 3.4-1.9" stroke-linecap="round"></path>
+            <circle cx="9.2" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
+            <circle cx="14.8" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </button>
+      </div>
+      <button class="c-btn" id="sendBtn" type="button" aria-label="보내기">
+        <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <rect x="9" y="3.5" width="6" height="11" rx="3"></rect>
+          <path d="M6.5 11.5a5.5 5.5 0 0011 0M12 17v3.2"></path>
+        </svg>
+        <svg id="sendIcon" viewBox="0 0 24 24" fill="#2aabee" style="display:none">
+          <path d="M3.4 11.2l16.8-7.4c.8-.3 1.5.5 1.1 1.3L15.2 20c-.4.9-1.6.8-1.9-.1l-2.2-6.6-6.6-2.2c-.9-.3-1-1.5-.1-1.9z"></path>
+        </svg>
+      </button>
     </footer>
   </div>
   <div class="burst-layer" id="burst"></div>
@@ -168,7 +272,11 @@
   <script>
     (function () {
       var S = window.SITE || {};
-      var list = window.CHATS || [];
+      var list = (window.CHATS || []).slice();
+      var LIVE = "tg-live-posts-v1";
+      try {
+        JSON.parse(localStorage.getItem(LIVE) || "[]").forEach(function (p) { list.push(p); });
+      } catch (e) {}
       var KEY = "tg-react-v1";
       function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } }
       function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
@@ -179,9 +287,6 @@
       document.getElementById("winTitle").textContent = S.channelName || "";
       document.title = S.channelName || document.title;
       if (S.avatar) document.getElementById("avatar").src = S.avatar;
-      var join = document.getElementById("join");
-      join.href = S.joinUrl || "#";
-      join.textContent = S.joinLabel || "채널 들어가기";
       var HEART_ICON = "❤️";
       var LIKE_ICON = "👍";
       function linkify(text) { return String(text).replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
@@ -210,7 +315,7 @@
           var imgs = item.images || (item.image ? [item.image] : []);
           if (imgs.length) {
             photos = '<div class="photos">' + imgs.map(function (src) {
-              return '<img src="' + esc(src) + '" alt="첨부 사진" />';
+              return '<img src="' + esc(src) + '" alt="" onerror="if(!this.dataset.alt){this.dataset.alt=1;var s=this.getAttribute(\'src\');this.src=/\\.png$/i.test(s)?s.replace(/\\.png$/i,\'.PNG\'):s.replace(/\\.PNG$/i,\'.png\');}" />';
             }).join("") + "</div>";
           }
           var yt = "";
@@ -285,6 +390,106 @@
         }
       });
       render();
+      var draft = document.getElementById("draft");
+      var sendBtn = document.getElementById("sendBtn");
+      var micIcon = document.getElementById("micIcon");
+      var sendIcon = document.getElementById("sendIcon");
+      var emojiPop = document.getElementById("emojiPop");
+      var filePick = document.getElementById("filePick");
+      var pendingImage = "";
+      var EMOJIS = ["😀","😁","😂","😊","😍","😭","😡","👍","❤️","🔥","✨","🙏","😎","🤔","👏","💯"];
+      emojiPop.innerHTML = EMOJIS.map(function (e) {
+        return '<button type="button" data-emoji="' + e + '">' + e + "</button>";
+      }).join("");
+      function syncSend() {
+        var on = draft.value.trim() || pendingImage;
+        micIcon.style.display = on ? "none" : "block";
+        sendIcon.style.display = on ? "block" : "none";
+      }
+      function grow() {
+        draft.style.height = "auto";
+        draft.style.height = Math.min(draft.scrollHeight, 120) + "px";
+      }
+      draft.addEventListener("input", function () { syncSend(); grow(); });
+      document.getElementById("emojiBtn").addEventListener("click", function () {
+        emojiPop.classList.toggle("open");
+      });
+      emojiPop.addEventListener("click", function (e) {
+        var b = e.target.closest("button");
+        if (!b) return;
+        draft.value += b.getAttribute("data-emoji");
+        emojiPop.classList.remove("open");
+        syncSend();
+        draft.focus();
+      });
+      document.getElementById("clipBtn").addEventListener("click", function () { filePick.click(); });
+      filePick.addEventListener("change", function () {
+        var file = filePick.files && filePick.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          pendingImage = reader.result;
+          document.getElementById("attachImg").src = pendingImage;
+          document.getElementById("attachPreview").classList.add("open");
+          syncSend();
+        };
+        reader.readAsDataURL(file);
+      });
+      function nowLabel() {
+        var d = new Date();
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var ap = h < 12 ? "오전" : "오후";
+        var hh = h % 12 || 12;
+        return ap + " " + hh + ":" + (m < 10 ? "0" : "") + m;
+      }
+      function todayLabel() {
+        var d = new Date();
+        return (d.getMonth() + 1) + "월 " + d.getDate() + "일";
+      }
+      function send() {
+        var text = draft.value.trim();
+        if (!text && !pendingImage) return;
+        var last = list[list.length - 1];
+        var today = todayLabel();
+        if (!last || last.type !== "date" && last.text !== today) {
+          var hasToday = list.some(function (it) { return it.type === "date" && it.text === today; });
+          if (!hasToday) list.push({ id: "day-" + Date.now(), type: "date", text: today });
+        }
+        var post = {
+          id: "live-" + Date.now(),
+          type: "post",
+          text: text,
+          hearts: 0,
+          likes: 0,
+          views: 1,
+          time: nowLabel(),
+          live: true
+        };
+        if (pendingImage) post.image = pendingImage;
+        list.push(post);
+        var saved = [];
+        try { saved = JSON.parse(localStorage.getItem(LIVE) || "[]"); } catch (e) {}
+        saved.push(post);
+        if (!list.some(function (it) { return it.id === "day-" + today; }) ) {
+          /* date chips from this session are not stored; re-add if needed on load */
+        }
+        localStorage.setItem(LIVE, JSON.stringify(saved));
+        draft.value = "";
+        pendingImage = "";
+        filePick.value = "";
+        document.getElementById("attachPreview").classList.remove("open");
+        emojiPop.classList.remove("open");
+        grow();
+        syncSend();
+        render();
+        var feed = document.getElementById("feed");
+        feed.scrollTop = feed.scrollHeight;
+      }
+      sendBtn.addEventListener("click", send);
+      draft.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+      });
       if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(function () {});
     })();
   </script>
