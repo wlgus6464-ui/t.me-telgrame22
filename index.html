@@ -57,21 +57,21 @@
     .msg {
       position: relative;
       background: var(--bubble);
-      border-radius: 12px 12px 4px 12px;
+      border-radius: 14px 14px 3px 14px;
       padding: 10px 12px 8px;
-      margin: 0 16px 10px 26%;
-      max-width: 74%;
+      margin: 0 20px 10px 10%;
+      max-width: 90%;
       width: auto;
     }
     .msg::after {
       content: "";
       position: absolute;
-      right: -8px;
+      right: -11px;
       bottom: 0;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 28px;
       background: var(--bubble);
-      clip-path: path("M0,16 L0,4 C2,10 8,16 16,16 Z");
+      clip-path: path("M0 2 C1 14 8 24 20 28 L0 28 Z");
     }
     .msg .author { color: var(--blue); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
     .msg .txt { font-size: 15px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
