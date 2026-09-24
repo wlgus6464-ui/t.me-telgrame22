@@ -4,9 +4,9 @@
    ========================================================= */
 
 window.SITE = {
-  channelName: "구독자 무료 추천방⚠️",
+  channelName: "김지현 관점방",
   badge: "",
-  subscribers: "구독자 786명",
+  subscribers: "구독자 11,786명",
   joinUrl: "https://t.me/nostradamousbtc",
   joinLabel: "채널 들어가기",
   avatar: "assets/avatar.jpg"
@@ -18,12 +18,12 @@ window.CHATS = [
   {
     id: "post-1",
     type: "post",
-    image: "",
-    text: "종목명 : 멀티버스엑스 (EGLD)\n거래소 : 업비트 , 빗썸\n매수가 : 5,000~5,100원\n매도가 : 10,000원 (100% 상승 예상)",
-    disclaimer: "",
+    image: "assets/1.PNG",
+    text: "호가창만 봐도 위아래 힘겨루기입니다.\n오늘은 관전 모드로 가겠습니다.",
+    disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
     hearts: 55,
     likes: 6,
-    views: 640,
+    views: 1640,
     time: "오후 3:09"
   },
 
