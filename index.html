@@ -134,8 +134,21 @@
       flex-shrink: 0;
       position: relative;
     }
-    .write-top { display: none; align-items: center; justify-content: space-between; padding: 4px 6px 2px; color: #8d9aa6; }
+    .write-top {
+      display: none;
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      right: 6px;
+      height: 28px;
+      align-items: center;
+      justify-content: space-between;
+      color: #8d9aa6;
+      z-index: 3;
+      pointer-events: none;
+    }
     .composer.writing .write-top { display: flex; }
+    .write-top .c-btn { pointer-events: auto; width: 28px; height: 28px; }
     .ai-mark { display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 400; color: #8b98a5; }
     .ai-mark svg { width: 14px; height: 14px; }
     .write-row { display: flex; align-items: flex-end; gap: 2px; }
@@ -166,9 +179,10 @@
       font-size: 15px;
       font-weight: 300;
       line-height: 1.35;
-      padding: 10px 6px;
+      padding: 8px 6px;
       overflow: hidden;
     }
+    .composer.writing .draft-mirror { padding: 6px 34px 4px 42px; }
     .box textarea {
       width: 100%;
       border: 0;
@@ -181,14 +195,15 @@
       font-size: 15px;
       font-weight: 300;
       line-height: 1.35;
-      max-height: 240px;
-      padding: 10px 6px;
+      max-height: 180px;
+      padding: 8px 6px;
       outline: none;
       overflow-y: auto;
       scrollbar-width: none;
       position: relative;
       z-index: 1;
     }
+    .composer.writing .box textarea { padding: 6px 34px 4px 42px; }
     .box textarea::-webkit-scrollbar { width: 0; height: 0; display: none; }
     .box textarea::placeholder { color: #7f8c98; }
     .idle-icons, .write-icons { display: flex; align-items: flex-end; flex-shrink: 0; }
@@ -454,7 +469,7 @@
         }
       });
       render();
-      stickBottom();
+      stickBottom(false);
       var draft = document.getElementById("draft");
       var mirror = document.getElementById("draftMirror");
       var composer = document.getElementById("composer");
@@ -474,19 +489,32 @@
         mirror.innerHTML = draft.value ? maskHtml(draft.value) : "";
         mirror.scrollTop = draft.scrollTop;
       }
-      function stickBottom() {
+      var scrollToken = 0;
+      function stickBottom(smooth) {
         var feed = document.getElementById("feed");
-        var last = feed.lastElementChild;
-        if (last && last.scrollIntoView) last.scrollIntoView(false);
-        feed.scrollTop = feed.scrollHeight;
+        var token = ++scrollToken;
+        var start = feed.scrollTop;
+        var t0 = performance.now();
+        var dur = smooth === false ? 0 : 520;
+        function frame(now) {
+          if (token !== scrollToken) return;
+          var target = Math.max(0, feed.scrollHeight - feed.clientHeight);
+          var p = dur === 0 ? 1 : Math.min(1, (now - t0) / dur);
+          var ease = 1 - Math.pow(1 - p, 3);
+          feed.scrollTop = start + (target - start) * ease;
+          if (p < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
       }
       function grow() {
-        draft.style.height = "auto";
-        draft.style.height = Math.min(draft.scrollHeight, 240) + "px";
-        mirror.style.height = draft.style.height;
+        draft.style.height = "0px";
+        var next = Math.min(draft.scrollHeight, 180);
+        draft.style.height = next + "px";
+        mirror.style.height = next + "px";
         paintMirror();
       }
       function openEmoji() { emojiPop.classList.toggle("open"); }
+      draft.addEventListener("focus", function () { stickBottom(); });
       draft.addEventListener("input", function () { syncSend(); grow(); stickBottom(); });
       draft.addEventListener("scroll", paintMirror);
       document.getElementById("emojiBtn").addEventListener("click", openEmoji);
@@ -554,10 +582,7 @@
         grow();
         syncSend();
         render();
-        requestAnimationFrame(function () {
-          stickBottom();
-          requestAnimationFrame(stickBottom);
-        });
+        stickBottom();
       }
       sendBtn.addEventListener("click", send);
       draft.addEventListener("keydown", function (e) {
