@@ -1,5 +1,6 @@
 /* =========================================================
    채팅 수정 파일 — 이 파일만 고치면 화면 글이 바뀝니다.
+   사진: assets/1.png ~ assets/10.png (위에서부터 1번)
    ========================================================= */
 
 window.SITE = {
@@ -11,47 +12,125 @@ window.SITE = {
   avatar: "assets/avatar.jpg"
 };
 
-/* type: "date" | "post"
-   hearts, likes, views, time 숫자/글자는 기본값입니다.
-   사진 넣는 법:
-     1) 사진을 assets 폴더에 넣기 예: assets/chart1.jpg
-     2) 글에 image: "assets/chart1.jpg" 한 줄 추가
-     여러 장이면 images: ["assets/a.jpg", "assets/b.jpg"]
-*/
 window.CHATS = [
 
+  { id: "day-917", type: "date", text: "9월 17일" },
   {
     id: "post-1",
     type: "post",
-    text: "만약 내가 원하는 자리를 주지 않고 올린다면? 어쩔수 없는 거고\n\n만약 내가 원하는 자리를 준다면? 좋은 거고\n\n그런 마인드가 매매에 유리하기 때문입니다.\n\n몰랐는데 제가 전체 공개 라이브를 안한지도 1년 가까이 되더라구요.\n\n조만간 한번 켜보도록 하겠습니다.",
+    image: "assets/1.png",
+    text: "호가창만 봐도 위아래 힘겨루기입니다.\n오늘은 관전 모드로 가겠습니다.",
     disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
-    hearts: 136,
-    likes: 15,
-    views: 4013,
-    time: "오후 9:04"
+    hearts: 55,
+    likes: 6,
+    views: 1640,
+    time: "오후 3:09"
   },
 
-  {
-    id: "day-919",
-    type: "date",
-    text: "9월 19일"
-  },
-
+  { id: "day-918", type: "date", text: "9월 18일" },
   {
     id: "post-2",
     type: "post",
-    text: "분석 업데이트 해서 영상 업로드 했습니다.\n\n오래 기다리셨습니다.\n\n드디어 코인에도 봄날이 오는 것 같네요\n\nhttps://youtu.be/uF-r_OBRWKw",
-    youtube: {
-      url: "https://youtu.be/uF-r_OBRWKw",
-      label: "YouTube",
-      title: "비트코인, 오래 기다리셨습니다. 드디어 시작됐네요.",
-      desc: "텔레그램 채널\n→ https://t.me/nostradamousbtc",
-      thumb: "assets/yt-thumb.jpg"
-    },
-    hearts: 82,
+    image: "assets/2.png",
+    text: "휴대폰으로 봐도 방향은 같습니다.\n돌파 확인하고 따라가는 게 속 편합니다.",
+    hearts: 84,
     likes: 8,
-    views: 2427,
-    time: "오후 4:30"
+    views: 2103,
+    time: "오후 8:17"
+  },
+
+  { id: "day-919", type: "date", text: "9월 19일" },
+  {
+    id: "post-3",
+    type: "post",
+    image: "assets/3.png",
+    text: "오늘은 짧게.\n자리 안 주면 그냥 쉽니다.",
+    hearts: 61,
+    likes: 5,
+    views: 3216,
+    time: "오후 11:56"
+  },
+
+  { id: "day-920", type: "date", text: "9월 20일" },
+  {
+    id: "post-4",
+    type: "post",
+    image: "assets/4.png",
+    text: "주봉으로 보면 큰 그림은 아직 안 깨졌습니다.\n6만 5천 부근을 기준선으로 보겠습니다.",
+    hearts: 127,
+    likes: 19,
+    views: 3537,
+    time: "오후 5:44"
+  },
+
+  { id: "day-921", type: "date", text: "9월 21일" },
+  {
+    id: "post-5",
+    type: "post",
+    image: "assets/5.png",
+    text: "파동 카운트는 사람마다 다릅니다.\n제 기준은 지금 4파 조정으로 보고 있습니다.",
+    disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
+    hearts: 93,
+    likes: 14,
+    views: 2541,
+    time: "오후 7:21"
+  },
+
+  { id: "day-922", type: "date", text: "9월 22일" },
+  {
+    id: "post-6",
+    type: "post",
+    image: "assets/6.png",
+    text: "라이브 들어와 주신 분들 감사합니다.\n앞으로 자주 뵙도록 하겠습니다~\n\n굿밤입니다.",
+    hearts: 104,
+    likes: 0,
+    views: 3267,
+    time: "오후 11:56"
+  },
+
+  { id: "day-923", type: "date", text: "9월 23일" },
+  {
+    id: "post-7",
+    type: "post",
+    image: "assets/7.png",
+    text: "이더랑 비트 같이 보면 결이 비슷합니다.\n둘 다 저항 앞이라 성급하게 안 들어갑니다.",
+    hearts: 76,
+    likes: 9,
+    views: 1766,
+    time: "오후 4:02"
+  },
+  {
+    id: "post-8",
+    type: "post",
+    image: "assets/8.png",
+    text: "밤에 차트 켜놓고 멍 때리다가 한 장 남깁니다.\n\n자리는 항상 주면 먹고, 안 주면 쉬는 겁니다.",
+    hearts: 141,
+    likes: 19,
+    views: 3320,
+    time: "오후 11:48"
+  },
+
+  { id: "day-924", type: "date", text: "9월 24일" },
+  {
+    id: "post-9",
+    type: "post",
+    image: "assets/9.png",
+    text: "차트만 보면 반등은 나온 자리입니다.\n\n다만 거래량이 따라오는지가 핵심이에요.",
+    hearts: 88,
+    likes: 11,
+    views: 1984,
+    time: "오전 10:12"
+  },
+  {
+    id: "post-10",
+    type: "post",
+    image: "assets/10.png",
+    text: "오늘 장 보면서 노란선 기준으로만 보겠습니다.\n\n위로 가면 추격, 아래로 가면 관망입니다.",
+    disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
+    hearts: 102,
+    likes: 7,
+    views: 2150,
+    time: "오후 12:35"
   }
 
 ];
