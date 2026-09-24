@@ -59,8 +59,8 @@
       background: var(--bubble);
       border-radius: 14px 14px 3px 14px;
       padding: 10px 12px 8px;
-      margin: 0 16px 10px auto;
-      max-width: 72%;
+      margin: 0 18px 10px auto;
+      max-width: calc(90% - 18px);
       width: fit-content;
     }
     .msg::after {
@@ -152,13 +152,31 @@
       padding: 0;
     }
     .c-btn svg { width: 24px; height: 24px; display: block; }
-    .box { flex: 1; min-width: 0; display: flex; align-items: flex-end; }
+    .mosaic { filter: blur(6px); display: inline-block; }
+    .box { flex: 1; min-width: 0; display: flex; align-items: flex-end; position: relative; }
+    .draft-mirror {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      pointer-events: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      text-align: right;
+      color: #e7ebee;
+      font-family: "Noto Sans KR", "Segoe UI", sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.35;
+      padding: 10px 6px;
+      overflow: hidden;
+    }
     .box textarea {
       width: 100%;
       border: 0;
       resize: none;
       background: transparent;
-      color: #e7ebee;
+      color: transparent;
+      caret-color: #e7ebee;
+      text-align: right;
       font-family: "Noto Sans KR", "Segoe UI", sans-serif;
       font-size: 15px;
       font-weight: 300;
@@ -168,6 +186,8 @@
       outline: none;
       overflow-y: auto;
       scrollbar-width: none;
+      position: relative;
+      z-index: 1;
     }
     .box textarea::-webkit-scrollbar { width: 0; height: 0; display: none; }
     .box textarea::placeholder { color: #7f8c98; }
@@ -260,6 +280,7 @@
         </button>
         <input id="filePick" type="file" accept="image/*" hidden />
         <div class="box">
+          <div class="draft-mirror" id="draftMirror"></div>
           <textarea id="draft" rows="1" placeholder="메시지 알리기..." spellcheck="false"></textarea>
         </div>
         <div class="idle-icons">
@@ -320,6 +341,11 @@
       var HEART_ICON = "❤️";
       var LIKE_ICON = "👍";
       function linkify(text) { return String(text).replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
+      function maskHtml(raw) {
+        return linkify(esc(raw)).replace(/(종목명|거래소|매수가|매도가)(\s*:\s*)([^\n<]+)/g, function (_, label, sep, value) {
+          return label + sep + '<span class="mosaic">' + value + "</span>";
+        });
+      }
       function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
       function getState(post) {
         var s = store[post.id] || {};
@@ -359,7 +385,7 @@
           return '<article class="msg" data-id="' + esc(item.id) + '">' +
             '<div class="author">' + esc(S.channelName || "") + (S.badge ? " " + S.badge : "") + "</div>" +
             photos +
-            '<div class="txt">' + linkify(esc(item.text || "")) + "</div>" +
+            '<div class="txt">' + maskHtml(item.text || "") + "</div>" +
             (item.disclaimer ? '<div class="disc">' + esc(item.disclaimer) + "</div>" : "") + yt +
             '<div class="row"><div class="reacts">' +
               '<button class="chip' + (st.heartOn ? " on" : "") + '" data-kind="heart">' + HEART_ICON + " " + st.hearts + "</button>" +
@@ -428,7 +454,9 @@
         }
       });
       render();
+      stickBottom();
       var draft = document.getElementById("draft");
+      var mirror = document.getElementById("draftMirror");
       var composer = document.getElementById("composer");
       var sendBtn = document.getElementById("sendBtn");
       var emojiPop = document.getElementById("emojiPop");
@@ -442,12 +470,23 @@
         var on = !!(draft.value.trim() || pendingImage);
         composer.classList.toggle("writing", on);
       }
+      function paintMirror() {
+        mirror.innerHTML = draft.value ? maskHtml(draft.value) : "";
+        mirror.scrollTop = draft.scrollTop;
+      }
+      function stickBottom() {
+        var feed = document.getElementById("feed");
+        feed.scrollTop = feed.scrollHeight;
+      }
       function grow() {
         draft.style.height = "auto";
         draft.style.height = Math.min(draft.scrollHeight, 240) + "px";
+        mirror.style.height = draft.style.height;
+        paintMirror();
       }
       function openEmoji() { emojiPop.classList.toggle("open"); }
       draft.addEventListener("input", function () { syncSend(); grow(); });
+      draft.addEventListener("scroll", paintMirror);
       document.getElementById("emojiBtn").addEventListener("click", openEmoji);
       document.getElementById("emojiIdle").addEventListener("click", openEmoji);
       emojiPop.addEventListener("click", function (e) {
@@ -456,6 +495,7 @@
         draft.value += b.getAttribute("data-emoji");
         emojiPop.classList.remove("open");
         syncSend();
+        grow();
         draft.focus();
       });
       document.getElementById("clipBtn").addEventListener("click", function () { filePick.click(); });
@@ -512,8 +552,10 @@
         grow();
         syncSend();
         render();
-        var feed = document.getElementById("feed");
-        feed.scrollTop = feed.scrollHeight;
+        requestAnimationFrame(function () {
+          stickBottom();
+          requestAnimationFrame(stickBottom);
+        });
       }
       sendBtn.addEventListener("click", send);
       draft.addEventListener("keydown", function (e) {
