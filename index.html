@@ -405,8 +405,33 @@
             '<div class="row"><div class="reacts">' +
               '<button class="chip' + (st.heartOn ? " on" : "") + '" data-kind="heart">' + HEART_ICON + " " + st.hearts + "</button>" +
               '<button class="chip' + (st.likeOn ? " on" : "") + '" data-kind="like">' + LIKE_ICON + " " + st.likes + "</button>" +
-            '</div><div class="meta-right">👁 ' + st.views + " &nbsp;" + esc(item.time || "") + "</div></div></article>";
+            '</div><div class="meta-right">👁 <span class="views-num">' + st.views + "</span> &nbsp;" + esc(item.time || "") + "</div></div></article>";
         }).join("");
+        list.forEach(armViews);
+      }
+      var viewTimers = {};
+      function nextView(n) {
+        var base = Math.floor(n / 10) * 10;
+        var high = base + 9;
+        if (base === 0) base = 1;
+        if (n >= high) {
+          base = high + 1;
+          high = base + 9;
+        }
+        var low = Math.max(n + 1, base);
+        return low + Math.floor(Math.random() * (high - low + 1));
+      }
+      function armViews(post) {
+        if (!post || !post.live || viewTimers[post.id]) return;
+        function tick() {
+          viewTimers[post.id] = setTimeout(function () {
+            post.views = nextView(post.views || 1);
+            var el = document.querySelector('.msg[data-id="' + post.id + '"] .views-num');
+            if (el) el.textContent = String(post.views);
+            tick();
+          }, 1000 + Math.random() * 2500);
+        }
+        tick();
       }
       function burst(el, kind, turningOn) {
         var layer = document.getElementById("burst");
