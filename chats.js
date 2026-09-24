@@ -4,9 +4,9 @@
    ========================================================= */
 
 window.SITE = {
-  channelName: "김지현 관점방",
+  channelName: "구독자 무료 추천방⚠️",
   badge: "🎖",
-  subscribers: "구독자 11,786명",
+  subscribers: "구독자 786명",
   joinUrl: "https://t.me/nostradamousbtc",
   joinLabel: "채널 들어가기",
   avatar: "assets/avatar.jpg"
