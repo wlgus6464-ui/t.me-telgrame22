@@ -9,7 +9,7 @@
   <title>김지현 관점방</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/avatar.jpg" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #0e1621;
@@ -76,7 +76,7 @@
     .msg .author { color: var(--blue); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
     .photos { margin: 6px -12px 8px; }
     .photos img { width: 100%; display: block; max-height: 360px; object-fit: cover; }
-    .msg .txt { font-size: 15px; font-weight: 400; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+    .msg .txt { font-size: 15px; font-weight: 300; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
     .msg .txt a { color: var(--link); text-decoration: none; }
     .msg .disc { margin-top: 12px; font-size: 14px; font-weight: 400; font-style: italic; color: #d7e0e8; line-height: 1.5; }
     .yt { margin-top: 10px; border-left: 3px solid #7b5cff; background: #1b2836; border-radius: 0 8px 8px 0; overflow: hidden; display: block; color: inherit; text-decoration: none; }
@@ -136,8 +136,8 @@
     }
     .write-top { display: none; align-items: center; justify-content: space-between; padding: 4px 6px 2px; color: #8d9aa6; }
     .composer.writing .write-top { display: flex; }
-    .ai-mark { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; }
-    .ai-mark svg { width: 16px; height: 16px; }
+    .ai-mark { display: inline-flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 400; color: #8b98a5; }
+    .ai-mark svg { width: 14px; height: 14px; }
     .write-row { display: flex; align-items: flex-end; gap: 2px; }
     .c-btn {
       width: 40px;
@@ -158,9 +158,11 @@
       border: 0;
       resize: none;
       background: transparent;
-      color: #fff;
-      font: 16px/1.45 "Noto Sans KR", "Segoe UI", sans-serif;
-      font-weight: 400;
+      color: #e7ebee;
+      font-family: "Noto Sans KR", "Segoe UI", sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.35;
       max-height: 240px;
       padding: 10px 6px;
       outline: none;
@@ -243,11 +245,11 @@
       <div class="emoji-pop" id="emojiPop"></div>
       <div class="write-top">
         <span class="ai-mark">
-          <svg viewBox="0 0 24 24" fill="#7d8b99"><path d="M12 1.6l1.15 4.55c.2.8.82 1.42 1.62 1.62L19.3 9l-4.53 1.23a2.1 2.1 0 00-1.62 1.62L12 16.4l-1.15-4.55a2.1 2.1 0 00-1.62-1.62L4.7 9l4.53-1.23a2.1 2.1 0 001.62-1.62L12 1.6z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#8b98a5"><path d="M12 2l1.1 6.2L19 9.2l-5.9 1.1L12 16.5l-1.1-6.2L5 9.2l5.9-1L12 2z"/></svg>
           Ai
         </span>
         <button class="c-btn" type="button" aria-label="크기">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4.5H5.5V8M16 4.5h2.5V8M8 19.5H5.5V16M16 19.5h2.5V16" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="7" width="10" height="10" rx="2.2"></rect></svg>
         </button>
       </div>
       <div class="write-row">
