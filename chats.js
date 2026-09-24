@@ -13,14 +13,17 @@ window.SITE = {
 
 /* type: "date" | "post"
    hearts, likes, views, time 숫자/글자는 기본값입니다.
-   하트·따봉은 화면에서 누르면 올라가고, 다시 누르면 취소됩니다.
+   사진 넣는 법:
+     1) 사진을 assets 폴더에 넣기 예: assets/chart1.jpg
+     2) 글에 image: "assets/chart1.jpg" 한 줄 추가
+     여러 장이면 images: ["assets/a.jpg", "assets/b.jpg"]
 */
 window.CHATS = [
 
   {
     id: "post-1",
     type: "post",
-    text: "ㅇ오늘 디비 100개나왔으면 좋겠다되더라구요.\n\n조만간 한번 켜보도록 하겠습니다.",
+    text: "만약 내가 원하는 자리를 주지 않고 올린다면? 어쩔수 없는 거고\n\n만약 내가 원하는 자리를 준다면? 좋은 거고\n\n그런 마인드가 매매에 유리하기 때문입니다.\n\n몰랐는데 제가 전체 공개 라이브를 안한지도 1년 가까이 되더라구요.\n\n조만간 한번 켜보도록 하겠습니다.",
     disclaimer: "매매 권유가 아니니 공부용으로만 봐주세요. 모든 책임은 본인에게 있습니다.",
     hearts: 136,
     likes: 15,
@@ -31,7 +34,7 @@ window.CHATS = [
   {
     id: "day-919",
     type: "date",
-    text: "9월 21일"
+    text: "9월 19일"
   },
 
   {
