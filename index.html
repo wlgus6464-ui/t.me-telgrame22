@@ -128,14 +128,17 @@
     footer.composer {
       background: #17212b;
       border-top: 1px solid #0e1621;
-      min-height: 54px;
       display: flex;
-      align-items: flex-end;
-      gap: 2px;
-      padding: 6px 6px 8px;
+      flex-direction: column;
+      padding: 6px 8px 8px;
       flex-shrink: 0;
       position: relative;
     }
+    .write-top { display: none; align-items: center; justify-content: space-between; padding: 4px 6px 2px; color: #8d9aa6; }
+    .composer.writing .write-top { display: flex; }
+    .ai-mark { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; }
+    .ai-mark svg { width: 16px; height: 16px; }
+    .write-row { display: flex; align-items: flex-end; gap: 2px; }
     .c-btn {
       width: 40px;
       height: 42px;
@@ -149,31 +152,27 @@
       padding: 0;
     }
     .c-btn svg { width: 24px; height: 24px; display: block; }
-    .box {
-      flex: 1;
-      min-width: 0;
-      background: #242f3d;
-      border-radius: 20px;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      padding: 0 4px 0 14px;
-    }
+    .box { flex: 1; min-width: 0; display: flex; align-items: flex-end; }
     .box textarea {
-      flex: 1;
+      width: 100%;
       border: 0;
       resize: none;
       background: transparent;
       color: #fff;
-      font: 16px/1.35 "Noto Sans KR", "Segoe UI", sans-serif;
-      max-height: 120px;
-      padding: 10px 0;
+      font: 16px/1.45 "Noto Sans KR", "Segoe UI", sans-serif;
+      font-weight: 400;
+      max-height: 240px;
+      padding: 10px 6px;
       outline: none;
     }
     .box textarea::placeholder { color: #7f8c98; }
+    .idle-icons, .write-icons { display: flex; align-items: flex-end; flex-shrink: 0; }
+    .composer.writing .idle-icons { display: none; }
+    .composer:not(.writing) .write-icons { display: none; }
+    #sendBtn svg { fill: #2ea6ff; }
     .emoji-pop {
       position: absolute;
-      right: 48px;
+      right: 12px;
       bottom: 58px;
       background: #1c2733;
       border-radius: 12px;
@@ -236,35 +235,64 @@
       </div>
     </header>
     <div class="feed" id="feed"></div>
-    <footer class="composer">
+    <footer class="composer" id="composer">
       <div class="attach-preview" id="attachPreview"><img id="attachImg" alt="" /></div>
       <div class="emoji-pop" id="emojiPop"></div>
-      <button class="c-btn" id="clipBtn" type="button" aria-label="첨부">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 12.5l6.2-6.2a3.2 3.2 0 114.5 4.5L10.2 19.3a4.6 4.6 0 01-6.5-6.5l8.4-8.4"></path>
-        </svg>
-      </button>
-      <input id="filePick" type="file" accept="image/*" hidden />
-      <div class="box">
-        <textarea id="draft" rows="1" placeholder="메시지 작성..."></textarea>
-        <button class="c-btn" id="emojiBtn" type="button" aria-label="이모지">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="8.2"></circle>
-            <path d="M8.6 14.2c.9 1.3 2.1 1.9 3.4 1.9s2.5-.6 3.4-1.9" stroke-linecap="round"></path>
-            <circle cx="9.2" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
-            <circle cx="14.8" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
-          </svg>
+      <div class="write-top">
+        <span class="ai-mark">
+          <svg viewBox="0 0 24 24" fill="#8d9aa6"><path d="M12 2.2l1.7 5.3 5.3 1.7-5.3 1.7L12 16.2l-1.7-5.3L5 9.2l5.3-1.7L12 2.2zM18.2 14.2l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4z"/></svg>
+          Ai
+        </span>
+        <button class="c-btn" type="button" aria-label="크기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
         </button>
       </div>
-      <button class="c-btn" id="sendBtn" type="button" aria-label="보내기">
-        <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <rect x="9" y="3.5" width="6" height="11" rx="3"></rect>
-          <path d="M6.5 11.5a5.5 5.5 0 0011 0M12 17v3.2"></path>
-        </svg>
-        <svg id="sendIcon" viewBox="0 0 24 24" fill="#2aabee" style="display:none">
-          <path d="M3.4 11.2l16.8-7.4c.8-.3 1.5.5 1.1 1.3L15.2 20c-.4.9-1.6.8-1.9-.1l-2.2-6.6-6.6-2.2c-.9-.3-1-1.5-.1-1.9z"></path>
-        </svg>
-      </button>
+      <div class="write-row">
+        <button class="c-btn" id="clipBtn" type="button" aria-label="첨부">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 12.5l6.2-6.2a3.2 3.2 0 114.5 4.5L10.2 19.3a4.6 4.6 0 01-6.5-6.5l8.4-8.4"></path>
+          </svg>
+        </button>
+        <input id="filePick" type="file" accept="image/*" hidden />
+        <div class="box">
+          <textarea id="draft" rows="1" placeholder="메시지 알리기..."></textarea>
+        </div>
+        <div class="idle-icons">
+          <button class="c-btn" type="button" aria-label="알림">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6.5 16.5h11l-1.1-1.6V10a4.4 4.4 0 10-8.8 0v4.9L6.5 16.5z"></path>
+              <path d="M10 16.5a2 2 0 004 0"></path>
+            </svg>
+          </button>
+          <button class="c-btn" id="emojiIdle" type="button" aria-label="이모지">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="8.2"></circle>
+              <path d="M8.6 14.2c.9 1.3 2.1 1.9 3.4 1.9s2.5-.6 3.4-1.9" stroke-linecap="round"></path>
+              <circle cx="9.2" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
+              <circle cx="14.8" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
+            </svg>
+          </button>
+          <button class="c-btn" type="button" aria-label="녹음">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <rect x="9" y="3.5" width="6" height="11" rx="3"></rect>
+              <path d="M6.5 11.5a5.5 5.5 0 0011 0M12 17v3.2"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="write-icons">
+          <button class="c-btn" id="emojiBtn" type="button" aria-label="이모지">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="8.2"></circle>
+              <path d="M8.6 14.2c.9 1.3 2.1 1.9 3.4 1.9s2.5-.6 3.4-1.9" stroke-linecap="round"></path>
+              <circle cx="9.2" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
+              <circle cx="14.8" cy="10.2" r="0.9" fill="currentColor" stroke="none"></circle>
+            </svg>
+          </button>
+          <button class="c-btn" id="sendBtn" type="button" aria-label="보내기">
+            <svg viewBox="0 0 24 24"><path d="M3.2 11.4l17.2-7.6c.7-.3 1.4.4 1.1 1.2l-6.2 15.2c-.3.8-1.5.7-1.7-.2l-2-6.2-6.2-2c-.9-.3-1-1.6-.2-2z"/></svg>
+          </button>
+        </div>
+      </div>
     </footer>
   </div>
   <div class="burst-layer" id="burst"></div>
@@ -273,10 +301,7 @@
     (function () {
       var S = window.SITE || {};
       var list = (window.CHATS || []).slice();
-      var LIVE = "tg-live-posts-v1";
-      try {
-        JSON.parse(localStorage.getItem(LIVE) || "[]").forEach(function (p) { list.push(p); });
-      } catch (e) {}
+      try { localStorage.removeItem("tg-live-posts-v1"); } catch (e) {}
       var KEY = "tg-react-v1";
       function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; } }
       function save(data) { localStorage.setItem(KEY, JSON.stringify(data)); }
@@ -398,9 +423,8 @@
       });
       render();
       var draft = document.getElementById("draft");
+      var composer = document.getElementById("composer");
       var sendBtn = document.getElementById("sendBtn");
-      var micIcon = document.getElementById("micIcon");
-      var sendIcon = document.getElementById("sendIcon");
       var emojiPop = document.getElementById("emojiPop");
       var filePick = document.getElementById("filePick");
       var pendingImage = "";
@@ -409,18 +433,17 @@
         return '<button type="button" data-emoji="' + e + '">' + e + "</button>";
       }).join("");
       function syncSend() {
-        var on = draft.value.trim() || pendingImage;
-        micIcon.style.display = on ? "none" : "block";
-        sendIcon.style.display = on ? "block" : "none";
+        var on = !!(draft.value.trim() || pendingImage);
+        composer.classList.toggle("writing", on);
       }
       function grow() {
         draft.style.height = "auto";
-        draft.style.height = Math.min(draft.scrollHeight, 120) + "px";
+        draft.style.height = Math.min(draft.scrollHeight, 240) + "px";
       }
+      function openEmoji() { emojiPop.classList.toggle("open"); }
       draft.addEventListener("input", function () { syncSend(); grow(); });
-      document.getElementById("emojiBtn").addEventListener("click", function () {
-        emojiPop.classList.toggle("open");
-      });
+      document.getElementById("emojiBtn").addEventListener("click", openEmoji);
+      document.getElementById("emojiIdle").addEventListener("click", openEmoji);
       emojiPop.addEventListener("click", function (e) {
         var b = e.target.closest("button");
         if (!b) return;
@@ -475,13 +498,6 @@
         };
         if (pendingImage) post.image = pendingImage;
         list.push(post);
-        var saved = [];
-        try { saved = JSON.parse(localStorage.getItem(LIVE) || "[]"); } catch (e) {}
-        saved.push(post);
-        if (!list.some(function (it) { return it.id === "day-" + today; }) ) {
-          /* date chips from this session are not stored; re-add if needed on load */
-        }
-        try { localStorage.setItem(LIVE, JSON.stringify(saved)); } catch (e) {}
         draft.value = "";
         pendingImage = "";
         filePick.value = "";
