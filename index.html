@@ -408,6 +408,7 @@
             '</div><div class="meta-right">👁 <span class="views-num">' + st.views + "</span> &nbsp;" + esc(item.time || "") + "</div></div></article>";
         }).join("");
         list.forEach(armViews);
+        list.forEach(armReacts);
       }
       var viewTimers = {};
       function subCap() {
@@ -434,6 +435,28 @@
           }, 1000 + Math.random() * 2500);
         }
         tick();
+      }
+      function paintReacts(post) {
+        var st = getState(post);
+        var msg = document.querySelector('.msg[data-id="' + post.id + '"]');
+        if (!msg) return;
+        var heartBtn = msg.querySelector('[data-kind="heart"]');
+        var likeBtn = msg.querySelector('[data-kind="like"]');
+        if (heartBtn) heartBtn.textContent = HEART_ICON + " " + st.hearts;
+        if (likeBtn) likeBtn.textContent = LIKE_ICON + " " + st.likes;
+      }
+      function armReacts(post) {
+        if (!post || !post.live || post._reactArmed) return;
+        post._reactArmed = true;
+        function loop(key) {
+          setTimeout(function () {
+            post[key] = (post[key] || 0) + 1 + Math.floor(Math.random() * 9);
+            paintReacts(post);
+            loop(key);
+          }, (1 + Math.floor(Math.random() * 9)) * 1000);
+        }
+        loop("hearts");
+        loop("likes");
       }
       function burst(el, kind, turningOn) {
         var layer = document.getElementById("burst");
