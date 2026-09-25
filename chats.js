@@ -110,5 +110,17 @@ window.CHATS = [
     likes: 111,
     views: 684,
     time: "오전 11:12"
+  },
+  { id: "day-925", type: "date", text: "9월 25일" },
+  {
+    id: "post-10",
+    type: "post",
+    image: "",
+    text: "어제 말씀드린 코인, 방향 확인했습니다.\n오늘은 이 타점으로 가겠습니다.\n\n종목명 : 솔스티스 (SLX)\n거래소 : 업비트 , 빗썸\n매수가 : 95원~96원\n매도가 : 200원 (105% 상승 예상)",
+    disclaimer: "",
+    hearts: 142,
+    likes: 27,
+    views: 418,
+    time: "오후 2:41"
   }
 ];
