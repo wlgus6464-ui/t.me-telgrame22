@@ -105,7 +105,7 @@ window.CHATS = [
     id: "post-9",
     type: "post",
     image: "assets/9.PNG",
-    text: "모두들 즐거운 한가위 보내세요~!\n오늘 오후 4~5시경 코인추천 드리겠습니다.",
+    text: "모두들 즐거운 한가위 보내세요~!\n현재 지켜보고있는 코인이 하나 있습니다만\n내일까지 방향을 살펴보고 매수타점드릴게요!",
     hearts: 388,
     likes: 111,
     views: 684,
