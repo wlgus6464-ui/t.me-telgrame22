@@ -38,7 +38,7 @@ window.CHATS = [
   {
     id: "post-3",
     type: "post",
-    image: "assets/3.PNG",
+    image: "assets/1.PNG",
     text: "멀티버스엑스 9월 17일 추천 이후로 100% 상승 나왔습니다.\n수익보신분들 축하드리고, 도움되셨다면 하트 한번씩 눌러주세요!",
     hearts: 201,
     likes: 55,
@@ -60,7 +60,7 @@ window.CHATS = [
   {
     id: "post-5",
     type: "post",
-    image: "assets/5.PNG",
+    image: "",
     text: "종목명 : 메타플렉스 (MPLX)\n거래소 : 빗썸\n매수가 : 45원~46원\n매도가 : 90원 (100% 상승 예상)",
     disclaimer: "",
     hearts: 193,
@@ -83,7 +83,7 @@ window.CHATS = [
   {
     id: "post-7",
     type: "post",
-    image: "assets/1.PNG",
+    image: "assets/2.PNG",
     text: "비쓰리 9월 20일 추천 이후로 약 65% 이상 상승나왔습니다.\n수익보신분들 축하드립니다!\n수익보셨다면 다들 하트한번씩~~",
     hearts: 316,
     likes: 109,
@@ -93,8 +93,8 @@ window.CHATS = [
   {
     id: "post-8",
     type: "post",
-    image: "assets/2.PNG",
-    text: "21일 추천드린 메타플렉스도 크게 상승하고이쎈요.\n다들 축하드립니다!",
+    image: "assets/3.PNG",
+    text: "21일 추천드린 메타플렉스도 크게 상승하고있네요.\n다들 축하드립니다!",
     hearts: 341,
     likes: 119,
     views: 720,
@@ -104,7 +104,7 @@ window.CHATS = [
   {
     id: "post-9",
     type: "post",
-    image: "assets/9.PNG",
+    image: "",
     text: "모두들 즐거운 한가위 보내세요~!\n현재 지켜보고있는 코인이 하나 있습니다만\n내일까지 방향을 살펴보고 매수타점드릴게요!",
     hearts: 388,
     likes: 111,
@@ -116,11 +116,11 @@ window.CHATS = [
     id: "post-10",
     type: "post",
     image: "",
-    text: "어제 말씀드린 코인, 방향 확인했습니다.\n오늘은 이 타점으로 가겠습니다.\n\n종목명 : 솔스티스 (SLX)\n거래소 : 업비트 , 빗썸\n매수가 : 95원~96원\n매도가 : 200원 (105% 상승 예상)",
+    text: "",
     disclaimer: "",
-    hearts: 142,
-    likes: 27,
-    views: 418,
-    time: "오후 2:41"
+    hearts: ,
+    likes: ,
+    views: ,
+    time: ""
   }
 ];
