@@ -548,14 +548,19 @@
       var scrollToken = 0;
       function stickBottom(smooth) {
         var feed = document.getElementById("feed");
+        var targetNow = Math.max(0, feed.scrollHeight - feed.clientHeight);
+        if (smooth === false) {
+          scrollToken++;
+          feed.scrollTop = targetNow;
+          return;
+        }
         var token = ++scrollToken;
         var start = feed.scrollTop;
         var t0 = performance.now();
-        var dur = smooth === false ? 0 : 520;
         function frame(now) {
           if (token !== scrollToken) return;
           var target = Math.max(0, feed.scrollHeight - feed.clientHeight);
-          var p = dur === 0 ? 1 : Math.min(1, (now - t0) / dur);
+          var p = Math.min(1, (now - t0) / 520);
           var ease = 1 - Math.pow(1 - p, 3);
           feed.scrollTop = start + (target - start) * ease;
           if (p < 1) requestAnimationFrame(frame);
@@ -636,8 +641,17 @@
         emojiPop.classList.remove("open");
         grow();
         syncSend();
+        var feed = document.getElementById("feed");
+        var wasBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 140;
+        var keep = feed.scrollTop;
         render();
-        stickBottom();
+        if (wasBottom) {
+          feed.scrollTop = feed.scrollHeight;
+          requestAnimationFrame(function () { feed.scrollTop = feed.scrollHeight; });
+        } else {
+          feed.scrollTop = keep;
+          stickBottom(true);
+        }
       }
       sendBtn.addEventListener("click", send);
       draft.addEventListener("keydown", function (e) {
