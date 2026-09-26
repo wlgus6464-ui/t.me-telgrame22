@@ -111,4 +111,15 @@ window.CHATS = [
     views: 684,
     time: "오전 11:12"
   },
+  { id: "day-925", type: "date", text: "9월 25일" },
+  {
+    id: "post-10",
+    type: "post",
+    image: "",
+    text: "종목명 : 디피니티브 (EDGD)\n거래소 : 업비트 , 빗썸\n매수가 : 115원~120원\n매도가 : 180원 (60% 상승 예상)",
+    hearts: 471,
+    likes: 204,
+    views: 701,
+    time: "오후 7:55"
+  },
 ];
