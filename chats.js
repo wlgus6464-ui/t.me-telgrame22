@@ -5,7 +5,7 @@
 window.SITE = {
   channelName: "구독자 무료추천⚠️",
   badge: "",
-  subscribers: "구독자 786명",
+  subscribers: "구독자 795명",
   joinUrl: "https://t.me/nostradamousbtc",
   joinLabel: "채널 들어가기",
   avatar: "assets/avatar.jpg"
