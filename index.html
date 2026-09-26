@@ -357,7 +357,7 @@
       var LIKE_ICON = "👍";
       function linkify(text) { return String(text).replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
       function maskHtml(raw) {
-        return linkify(esc(raw)).replace(/(종목명|거래소|매수가|매도가)(\s*:\s*)([^\n<]+)/g, function (_, label, sep, value) {
+        return linkify(esc(raw)).replace(/(종목명|거래소|매수가)(\s*:\s*)([^\n<]+)/g, function (_, label, sep, value) {
           return label + sep + '<span class="mosaic">' + value + "</span>";
         });
       }
