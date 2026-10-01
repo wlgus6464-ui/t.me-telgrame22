@@ -135,7 +135,7 @@ window.CHATS = [
   },
   { id: "day-927", type: "date", text: "9월 27일" },
   {
-    id: "post-11",
+    id: "post-12",
     type: "post",
     image: "",
     text: "종목명 : 아크 (ARK)\n거래소 : 업비트 , 빗썸\n매수가 : 300원~305원\n매도가 : 500원 (60% 상승 예상)",
@@ -146,7 +146,7 @@ window.CHATS = [
   },
   { id: "day-928", type: "date", text: "9월 28일" },
   {
-    id: "post-11",
+    id: "post-13",
     type: "post",
     image: "",
     text: "현재 많은 유튜브 시청자분들께서 입장 문의를 주셔가지고\n잠시 하루이틀정도는 매매 쉬어가겠습니다.",
@@ -154,5 +154,16 @@ window.CHATS = [
     likes: 55,
     views: 431,
     time: "오후 1:15"
+  },
+  { id: "day-930", type: "date", text: "9월 30일" },
+  {
+    id: "post-14",
+    type: "post",
+    image: "assets/4.PNG",
+    text: "쑨코인 9월 26일 추천 이후로 약 170% 이상 상승나왔습니다.\n수익보신분들 축하드립니다!\n수익보셨다면 다들 하트한번씩~~",
+    hearts: 515,
+    likes: 177,
+    views: 826,
+    time: "오후 5:19"
   },
 ];
