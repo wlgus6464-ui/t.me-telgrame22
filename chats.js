@@ -122,6 +122,7 @@ window.CHATS = [
     views: 701,
     time: "오후 7:55"
   },
+  { id: "day-926", type: "date", text: "9월 26일" },
   {
     id: "post-11",
     type: "post",
@@ -131,5 +132,27 @@ window.CHATS = [
     likes: 179,
     views: 817,
     time: "오후 10:17"
+  },
+  { id: "day-927", type: "date", text: "9월 27일" },
+  {
+    id: "post-11",
+    type: "post",
+    image: "",
+    text: "종목명 : 아크 (ARK)\n거래소 : 업비트 , 빗썸\n매수가 : 300원~305원\n매도가 : 500원 (60% 상승 예상)",
+    hearts: 411,
+    likes: 279,
+    views: 801,
+    time: "오후 3:47"
+  },
+  { id: "day-928", type: "date", text: "9월 28일" },
+  {
+    id: "post-11",
+    type: "post",
+    image: "",
+    text: "현재 많은 유튜브 시청자분들께서 입장 문의를 주셔가지고\n잠시 하루이틀정도는 매매 쉬어가겠습니다.",
+    hearts: 211,
+    likes: 55,
+    views: 431,
+    time: "오후 1:15"
   },
 ];
