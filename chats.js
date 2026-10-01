@@ -5,7 +5,7 @@
 window.SITE = {
   channelName: "구독자 무료추천⚠️",
   badge: "",
-  subscribers: "구독자 795명",
+  subscribers: "구독자 827명",
   joinUrl: "https://t.me/nostradamousbtc",
   joinLabel: "채널 들어가기",
   avatar: "assets/avatar.jpg"
@@ -121,5 +121,15 @@ window.CHATS = [
     likes: 204,
     views: 701,
     time: "오후 7:55"
+  },
+  {
+    id: "post-11",
+    type: "post",
+    image: "",
+    text: "종목명 : 쑨 (SOON)\n거래소 : 업비트 , 빗썸\n매수가 : 270원~280원\n매도가 : 800원 (200% 상승 예상)",
+    hearts: 501,
+    likes: 179,
+    views: 817,
+    time: "오후 10:17"
   },
 ];
