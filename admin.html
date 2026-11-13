@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>텔레그램 관리자</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0b0f14; --panel: #121a23; --card: #17212b; --card2: #1e2b38; --line: #263442; --line2: #33475a;
+    --text: #e9eef3; --mute: #8b9bab; --blue: #2aabee; --blue2: #3f96d0;
+    --ok: #4cd07d; --warn: #f2b84b; --bad: #ef6b6b; --sel: #ffd34d;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--text); font: 14px/1.5 "Noto Sans KR", "Segoe UI", sans-serif; overflow: hidden; display: flex; flex-direction: column; }
+button, input, textarea, select { font: inherit; color: inherit; }
+a { color: var(--blue); }
+
+.top { flex-shrink: 0; height: 56px; display: flex; align-items: center; gap: 8px; padding: 0 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.top h1 { font-size: 16px; font-weight: 700; white-space: nowrap; margin-right: 4px; }
+.conn { font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #1d2935; color: var(--mute); white-space: nowrap; }
+.conn.ok { color: var(--ok); } .conn.warn { color: var(--warn); } .conn.bad { color: var(--bad); }
+.dirty { font-size: 12px; color: var(--warn); white-space: nowrap; }
+.sp { flex: 1; }
+.btn { border: 1px solid var(--line2); background: var(--card2); border-radius: 8px; padding: 7px 12px; cursor: pointer; white-space: nowrap; text-decoration: none; color: var(--text); display: inline-flex; align-items: center; gap: 4px; }
+.btn:hover { border-color: #4a6278; }
+.btn.pri { background: var(--blue2); border-color: var(--blue2); color: #fff; font-weight: 700; }
+.btn.pri:disabled { background: #233140; border-color: #233140; color: #6f8292; cursor: default; }
+.btn.small { padding: 3px 9px; font-size: 12px; border-radius: 6px; }
+.btn.danger { color: #ff9a9a; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 480px; flex: 1; min-height: 0; }
+.edit { overflow-y: auto; padding: 14px 18px 90px; }
+.help { color: var(--mute); font-size: 13px; }
+.intro { margin-bottom: 12px; }
+#loadErr { background: #3a1d1d; border: 1px solid #6b2e2e; color: #ffd0d0; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; transition: border-color .15s, box-shadow .15s; }
+.card.sel { border-color: var(--sel); box-shadow: 0 0 0 1px var(--sel) inset; }
+.card.drop { border-color: var(--blue); border-style: dashed; }
+.ch { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.tag { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 10px; background: #1c3345; color: #71bbfa; white-space: nowrap; }
+.tag.d { background: #2b2a1c; color: #e8cf6a; }
+.tag.c { background: #1f3326; color: #79dca0; }
+.cid { font-size: 12px; color: #5f7183; }
+.ic { width: 28px; height: 28px; border: 1px solid transparent; background: transparent; border-radius: 6px; cursor: pointer; color: var(--mute); font-size: 14px; display: grid; place-items: center; }
+.ic:hover { background: var(--card2); border-color: var(--line2); color: var(--text); }
+.ic.del:hover { color: #ff9a9a; }
+
+input[type=text], input:not([type]), textarea { width: 100%; background: #0f161e; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; outline: none; }
+input:focus, textarea:focus { border-color: var(--blue2); }
+textarea { resize: none; overflow: hidden; line-height: 1.55; min-height: 40px; display: block; }
+.fl { display: block; margin-top: 8px; }
+.fl > span { display: block; font-size: 12px; color: var(--mute); margin-bottom: 3px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.chgrid { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 4px; }
+.av { border: 1px dashed var(--line2); background: transparent; border-radius: 12px; padding: 8px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--mute); font-size: 12px; }
+.av img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: #0f161e; }
+.av:hover { border-color: var(--blue2); color: var(--text); }
+
+.ph { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.th { position: relative; width: 84px; height: 84px; border-radius: 8px; overflow: hidden; background: #0f161e; border: 1px solid var(--line); cursor: pointer; padding: 0; }
+.th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.th .x { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: 12px; cursor: pointer; display: grid; place-items: center; }
+.th .new { position: absolute; left: 3px; bottom: 3px; font-size: 10px; background: var(--blue2); color: #fff; border-radius: 4px; padding: 0 4px; }
+.th.add { border-style: dashed; color: var(--mute); font-size: 12px; display: grid; place-items: center; line-height: 1.3; }
+.th.add:hover { border-color: var(--blue2); color: var(--text); }
+.ph.empty { margin: 6px 0 8px; }
+.ph.empty .th.add { width: auto; height: 30px; padding: 0 12px; }
+
+.nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr); gap: 8px; margin-top: 8px; }
+.nums label { display: flex; align-items: center; gap: 5px; background: #0f161e; border: 1px solid var(--line); border-radius: 8px; padding: 0 0 0 8px; }
+.nums label:focus-within { border-color: var(--blue2); }
+.nums input { border: 0 !important; background: transparent !important; padding: 7px 8px 7px 2px !important; min-width: 0; }
+.nums .now { border: 0; background: #1c3345; color: #71bbfa; font-size: 11px; border-radius: 6px; padding: 2px 6px; margin-right: 5px; cursor: pointer; white-space: nowrap; }
+
+details.more { margin-top: 8px; }
+details.more summary { cursor: pointer; color: var(--mute); font-size: 12px; user-select: none; }
+details.more summary:hover { color: var(--text); }
+.ytrow { display: flex; gap: 8px; align-items: flex-end; }
+.ytrow .fl { flex: 1; }
+
+.addrow { display: flex; gap: 6px; margin-top: 8px; opacity: .55; transition: opacity .15s; }
+.card:hover .addrow, .card.sel .addrow { opacity: 1; }
+.addrow button { border: 1px dashed var(--line2); background: transparent; border-radius: 6px; padding: 2px 10px; color: var(--mute); font-size: 12px; cursor: pointer; }
+.addrow button:hover { border-color: var(--blue2); color: var(--text); }
+.card.date { padding: 6px 12px; }
+.card.date .ch input { max-width: 180px; padding: 4px 10px; font-weight: 700; text-align: center; }
+.card.date .addrow { margin-top: 4px; }
+.listhead { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; }
+.listhead h2 { font-size: 15px; }
+.endrow { display: flex; gap: 8px; margin-top: 10px; }
+
+.pv { border-left: 1px solid var(--line); background: #080b0f; display: flex; flex-direction: column; min-height: 0; }
+.pvbar { display: flex; align-items: center; gap: 8px; padding: 10px 14px 6px; font-size: 12px; color: var(--mute); }
+.pvarea { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; padding: 4px 10px 10px; overflow: hidden; }
+.pvhold { position: relative; flex-shrink: 0; }
+.pvwrap { position: absolute; left: 0; top: 0; width: 430px; height: 860px; transform-origin: 0 0; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px #1c2733, 0 18px 50px rgba(0,0,0,.6); background: #0e1621; }
+.pvwrap iframe { position: absolute; inset: 0; width: 430px; height: 860px; border: 0; visibility: hidden; }
+.pvwrap iframe.on { visibility: visible; }
+
+.mtabs { display: none; }
+#toasts { position: fixed; left: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 50; max-width: min(460px, calc(100vw - 32px)); }
+.toast { background: #1e2b38; border: 1px solid var(--line2); border-radius: 10px; padding: 10px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.45); display: flex; gap: 10px; align-items: center; }
+.toast.ok { border-color: #2f7a4f; } .toast.warn { border-color: #8a6a2a; } .toast.bad { border-color: #8a3434; }
+.toast .msg { flex: 1; }
+.toast button { flex-shrink: 0; }
+
+dialog { margin: auto; background: var(--panel); color: var(--text); border: 1px solid var(--line2); border-radius: 14px; padding: 18px 20px; width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 40px); overflow-y: auto; }
+dialog::backdrop { background: rgba(0,0,0,.6); }
+dialog h3 { font-size: 16px; margin-bottom: 8px; }
+.dlg-msg { background: #3a2d14; border: 1px solid #6b5426; color: #ffe2a8; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; font-size: 13px; }
+.dlg-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+.dlg-btns .sp { flex: 1; }
+.howto { margin-top: 12px; background: #0f161e; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; }
+.howto summary { cursor: pointer; font-weight: 500; }
+.howto ol { margin: 8px 0 4px 18px; color: #c9d4de; font-size: 13px; }
+.howto li { margin: 4px 0; }
+.howto code { background: #1e2b38; padding: 0 5px; border-radius: 4px; }
+.row { display: flex; gap: 8px; }
+.three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+.three .lab { font-size: 12px; color: var(--mute); }
+.note { font-size: 12px; color: var(--ok); margin-top: 6px; }
+#imgDlg { width: min(720px, calc(100vw - 24px)); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+.pick { border: 1px solid var(--line); background: #0f161e; border-radius: 10px; padding: 0; overflow: hidden; cursor: pointer; text-align: left; }
+.pick:hover { border-color: var(--blue2); }
+.pick img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #0b0f14; }
+.pick span { display: block; font-size: 11px; color: var(--mute); padding: 4px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 900px) {
+    .top { height: auto; min-height: 56px; flex-wrap: wrap; padding: 8px 12px; }
+    .top h1 { font-size: 15px; }
+    .main { display: block; padding-bottom: 52px; }
+    .edit, .pv { height: 100%; }
+    .pv { border-left: 0; }
+    body:not(.m-pv) .pv { display: none; }
+    body.m-pv .edit { display: none; }
+    .mtabs { display: flex; position: fixed; left: 0; right: 0; bottom: 0; height: 52px; background: var(--panel); border-top: 1px solid var(--line); z-index: 40; }
+    .mtabs button { flex: 1; border: 0; background: transparent; color: var(--mute); font-size: 14px; cursor: pointer; }
+    .mtabs button.on { color: var(--text); font-weight: 700; box-shadow: 0 -2px 0 var(--blue) inset; }
+    .nums { grid-template-columns: 1fr 1fr; }
+    #toasts { bottom: 64px; }
+    .hide-m { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="top">
+    <h1>텔레그램 관리자</h1>
+    <span id="conn" class="conn">불러오는 중…</span>
+    <span id="dirty" class="dirty" hidden>● 저장 안 한 수정 있음</span>
+    <span class="sp"></span>
+    <button id="btnSet" class="btn" type="button">⚙ 연결 설정</button>
+    <button id="btnReload" class="btn" type="button">↻ <span class="hide-m">다시 불러오기</span></button>
+    <a id="btnSite" class="btn" href="#" target="_blank" rel="noopener"><span class="hide-m">홈페이지</span> ↗</a>
+    <button id="btnSave" class="btn pri" type="button" disabled>💾 저장</button>
+</div>
+
+<div class="main">
+    <div class="edit" id="edit">
+        <p class="help intro">왼쪽 칸이나 오른쪽 화면을 눌러 고친 뒤 <b>💾 저장</b>을 누르면 1~2분 뒤 홈페이지에 바뀝니다. 오른쪽 화면의 글은 그 자리에서 바로 고쳐도 됩니다. 사진은 글을 고른 뒤 <b>Ctrl+V</b> 로 붙여넣거나 끌어다 놓아도 됩니다.</p>
+        <div id="loadErr" hidden></div>
+        <section class="card" id="chan"></section>
+        <div class="listhead"><h2>채팅 목록</h2><span class="help" id="listCount"></span></div>
+        <div id="list"></div>
+        <div class="endrow">
+            <button class="btn" type="button" data-act="enddate">＋ 맨 아래에 날짜</button>
+            <button class="btn" type="button" data-act="endpost">＋ 맨 아래에 글</button>
+        </div>
+    </div>
+    <aside class="pv">
+        <div class="pvbar"><span>미리보기 · 저장하기 전 모습</span><span class="sp"></span><span>글은 눌러서 바로 고치기</span></div>
+        <div class="pvarea" id="pvArea">
+            <div class="pvhold" id="pvHold">
+                <div class="pvwrap" id="pvWrap">
+                    <iframe id="pvA" title="미리보기"></iframe>
+                    <iframe id="pvB" title="미리보기"></iframe>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div class="mtabs"><button id="tabEdit" class="on" type="button">✏️ 고치기</button><button id="tabPv" type="button">📱 미리보기</button></div>
+<div id="toasts"></div>
+<input id="filePick" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+
+<dialog id="imgDlg">
+    <h3>사진 고르기</h3>
+    <p class="help">이미 올린 사진을 누르거나, 새 사진을 올리세요. 이 창이 열려 있을 때 Ctrl+V 로 붙여넣어도 됩니다.</p>
+    <div class="grid" id="imgGrid"></div>
+    <div class="dlg-btns">
+        <button id="imgUp" class="btn pri" type="button">＋ 내 컴퓨터에서 새 사진</button>
+        <button id="imgClose" class="btn" type="button">닫기</button>
+    </div>
+</dialog>
+
+<dialog id="setDlg">
+    <h3>GitHub 연결 설정</h3>
+    <p id="setMsg" class="dlg-msg" hidden></p>
+    <p class="help">저장하려면 GitHub 비밀 키가 필요합니다. 이 키는 이 브라우저 안에만 저장되고, GitHub 에 저장할 때만 쓰입니다.</p>
+    <div class="fl">
+        <span><b>GitHub 비밀 키</b> · github_pat_ 로 시작합니다</span>
+        <div class="row">
+            <input id="setToken" type="password" autocomplete="off" spellcheck="false">
+            <button id="setShow" class="btn small" type="button">보기</button>
+        </div>
+        <div id="setNova" class="note" hidden>칸을 비워 두면 노바덱스 관리자 페이지에 넣어 둔 키를 같이 씁니다.</div>
+    </div>
+    <details class="howto" id="howAdd">
+        <summary>노바덱스 키에 이 저장소 추가하는 법 (키를 이미 만들었다면)</summary>
+        <ol>
+            <li>GitHub 에 로그인한 상태에서 <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">비밀 키 목록</a>을 엽니다.</li>
+            <li>노바덱스 때 만든 키 이름(예: <code>NovaDEX 관리자</code>)을 누르고 <b>Edit</b> 을 누릅니다.</li>
+            <li><b>Repository access</b> 의 <b>Only select repositories</b> 에서 <b class="repoName">t.me-telgrame22</b> 를 더 고릅니다.</li>
+            <li>맨 아래 <b>Update</b> 를 누릅니다. 키 글자는 그대로라서 여기에 다시 넣지 않아도 됩니다.</li>
+        </ol>
+    </details>
+    <details class="howto">
+        <summary>새 비밀 키 만드는 법</summary>
+        <ol>
+            <li>GitHub 에 로그인한 상태에서 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">비밀 키 만들기 화면</a>을 엽니다.</li>
+            <li><b>Token name</b> 칸에 <code>텔레그램 관리자</code> 라고 적습니다.</li>
+            <li><b>Expiration</b> 에서 기간을 고릅니다 (예: 1년).</li>
+            <li><b>Repository access</b> 에서 <b>Only select repositories</b> 를 누르고 <b class="repoName">t.me-telgrame22</b> 를 고릅니다.</li>
+            <li><b>Permissions</b> 에서 <b>Contents</b> 를 <b>Read and write</b> 로 바꿉니다.</li>
+            <li>맨 아래 초록 버튼 <b>Generate token</b> 을 누르고, 나온 키를 복사해 위 칸에 붙여넣습니다.</li>
+        </ol>
+    </details>
+    <details class="howto">
+        <summary>고급: 저장소 정보</summary>
+        <div class="three">
+            <div><div class="lab">계정 이름</div><input id="setOwner" type="text" spellcheck="false"></div>
+            <div><div class="lab">저장소 이름</div><input id="setRepo" type="text" spellcheck="false"></div>
+            <div><div class="lab">브랜치</div><input id="setBranch" type="text" spellcheck="false"></div>
+        </div>
+    </details>
+    <div class="dlg-btns">
+        <button id="setClear" class="btn danger" type="button">비밀 키 지우기</button>
+        <span class="sp"></span>
+        <button id="setCancel" class="btn" type="button">취소</button>
+        <button id="setOk" class="btn pri" type="button">저장</button>
+    </div>
+</dialog>
+
+<script>
+(() => {
+    'use strict';
+    const $ = (s, el) => (el || document).querySelector(s);
+    const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const LS = 'tgAdmin';
+    const lsGet = k => { try { return JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) { return {}; } };
+    const lsSet = (k, o) => { try { localStorage.setItem(k, JSON.stringify(o)); } catch (e) {} };
+    const isMobile = () => matchMedia('(max-width: 900px)').matches;
+
+    const DEFAULT = (() => {
+        const h = location.hostname;
+        if (/\.github\.io$/i.test(h)) {
+            return { owner: h.split('.')[0], repo: decodeURIComponent(location.pathname.split('/')[1] || '') || 't.me-telgrame22', branch: 'main' };
+        }
+        return { owner: 'wlgus6464-ui', repo: 't.me-telgrame22', branch: 'main' };
+    })();
+    const DEFAULT_HEADER = '/* =========================================================\n   채팅 수정 파일 — 이 파일만 고치면 화면 글이 바뀝니다.\n   ========================================================= */';
+
+    const S = { settings: {}, tokenFrom: '', saving: false };
+    const D = { header: DEFAULT_HEADER, site: {}, chats: [], loaded: '', sha: '', indexHtml: '', assets: [], pending: {}, uploaded: {} };
+    let sel = -1;
+    let undo = null;
+
+    // ---------- 설정 ----------
+    function loadSettings() {
+        const mine = lsGet(LS).settings || {};
+        S.settings = Object.assign({}, DEFAULT, mine);
+        S.tokenFrom = mine.token ? 'mine' : '';
+        if (!S.settings.token) {
+            const nv = (lsGet('novadexAdmin').settings || {}).token;
+            if (nv) { S.settings.token = nv; S.tokenFrom = 'nova'; }
+        }
+    }
+    const repoPath = () => '/repos/' + S.settings.owner + '/' + S.settings.repo;
+    const siteUrl = () => 'https://' + S.settings.owner.toLowerCase() + '.github.io/' + S.settings.repo + '/';
+    const rawBase = () => 'https://raw.githubusercontent.com/' + S.settings.owner + '/' + S.settings.repo + '/' + S.settings.branch + '/';
+    const ref = () => '?ref=' + encodeURIComponent(S.settings.branch);
+
+    function setConn(text, kind) { const el = $('#conn'); el.textContent = text; el.className = 'conn' + (kind ? ' ' + kind : ''); }
+    function setConnDefault() {
+        if (!S.settings.token) setConn('보기만 가능 (비밀 키 없음)', 'warn');
+        else if (S.tokenFrom === 'nova') setConn('GitHub 연결됨 · 노바덱스 키', 'ok');
+        else setConn('GitHub 연결됨', 'ok');
+    }
+
+    // ---------- GitHub ----------
+    function ghError(status, msg) {
+        if (status === 401) return 'GitHub 비밀 키가 틀렸거나 기간이 끝났습니다. [⚙ 연결 설정]에서 새 키를 넣어 주세요.';
+        if (status === 403 && /rate limit/i.test(msg)) return 'GitHub 읽기 횟수 한도가 찼습니다. [⚙ 연결 설정]에서 비밀 키를 넣으면 풀립니다.';
+        if (status === 403 || (status === 404 && S.saving)) {
+            return '이 비밀 키에는 ' + S.settings.repo + ' 저장소에 저장할 권한이 없습니다. [⚙ 연결 설정] → "노바덱스 키에 이 저장소 추가하는 법"을 봐 주세요.';
+        }
+        if (status === 404) return '저장소나 파일을 찾지 못했습니다. [⚙ 연결 설정] → 고급에서 저장소 이름을 확인해 주세요.';
+        if (status === 409) return 'GitHub 저장소가 바빠서 저장하지 못했습니다. 잠시 뒤 다시 눌러 주세요.';
+        return 'GitHub 오류 ' + status + (msg ? ' (' + msg + ')' : '');
+    }
+    async function gh(path, opt) {
+        opt = opt || {};
+        const headers = { Accept: 'application/vnd.github+json' };
+        if (S.settings.token) headers.Authorization = 'Bearer ' + S.settings.token;
+        if (opt.body) headers['Content-Type'] = 'application/json';
+        let r;
+        try {
+            r = await fetch('https://api.github.com' + path, { method: opt.method || 'GET', headers: headers, cache: 'no-store', body: opt.body ? JSON.stringify(opt.body) : undefined });
+        } catch (e) {
+            throw new Error('GitHub 에 접속하지 못했습니다. 인터넷 연결을 확인해 주세요.');
+        }
+        if (!r.ok) {
+            let msg = '';
+            try { msg = (await r.json()).message || ''; } catch (e) {}
+            const err = new Error(ghError(r.status, msg));
+            err.status = r.status;
+            throw err;
+        }
+        return r.status === 204 ? null : r.json();
+    }
+    function b64dec(s) {
+        const bin = atob(String(s).replace(/\s/g, ''));
+        const u = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+        return new TextDecoder('utf-8').decode(u);
+    }
+    const fileB64 = file => new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(String(r.result).split(',')[1] || '');
+        r.onerror = () => rej(new Error('사진 파일을 읽지 못했습니다.'));
+        r.readAsDataURL(file);
+    });
+
+    // ---------- chats.js 읽기 / 쓰기 ----------
+    function parseChats(text) {
+        const w = {};
+        try { new Function('window', text + '\n;')(w); }
+        catch (e) { throw new Error('chats.js 를 읽지 못했습니다 (' + e.message + '). GitHub 에서 직접 고치다 글자가 깨졌을 수 있어요.'); }
+        if (!Array.isArray(w.CHATS)) throw new Error('chats.js 안에 window.CHATS 목록이 없습니다.');
+        const m = text.match(/^\s*(\/\*[\s\S]*?\*\/)/);
+        return { site: w.SITE && typeof w.SITE === 'object' ? w.SITE : {}, chats: w.CHATS.filter(x => x && typeof x === 'object'), header: m ? m[1] : DEFAULT_HEADER };
+    }
+    const ID_RE = /^[A-Za-z_$][\w$]*$/;
+    const SITE_ORDER = ['channelName', 'badge', 'subscribers', 'joinUrl', 'joinLabel', 'avatar'];
+    const POST_ORDER = ['id', 'type', 'image', 'images', 'text', 'disclaimer', 'youtube', 'hearts', 'likes', 'views', 'time'];
+    const YT_ORDER = ['url', 'label', 'title', 'desc', 'thumb'];
+    const keyOf = k => ID_RE.test(k) ? k : JSON.stringify(k);
+    function ordered(o, order) {
+        const ks = Object.keys(o).filter(k => o[k] !== undefined && typeof o[k] !== 'function' && k.charAt(0) !== '_');
+        return order.filter(k => ks.indexOf(k) >= 0).concat(ks.filter(k => order.indexOf(k) < 0));
+    }
+    function val(v, ind, order) {
+        if (v === null) return 'null';
+        if (typeof v === 'string') return JSON.stringify(v);
+        if (typeof v === 'number') return isFinite(v) ? String(v) : '0';
+        if (typeof v === 'boolean') return String(v);
+        if (Array.isArray(v)) {
+            if (!v.length) return '[]';
+            if (v.every(x => x === null || typeof x !== 'object')) return '[' + v.map(x => val(x, ind)).join(', ') + ']';
+            return '[\n' + v.map(x => ind + '  ' + val(x, ind + '  ') + ',').join('\n') + '\n' + ind + ']';
+        }
+        if (typeof v === 'object') return obj(v, ind, order);
+        return 'null';
+    }
+    function obj(o, ind, order) {
+        const ks = ordered(o, order || []);
+        if (!ks.length) return '{}';
+        return '{\n' + ks.map(k => ind + '  ' + keyOf(k) + ': ' + val(o[k], ind + '  ', k === 'youtube' ? YT_ORDER : null)).join(',\n') + '\n' + ind + '}';
+    }
+    function serialize() {
+        let out = D.header + '\n';
+        out += 'window.SITE = ' + obj(D.site, '', SITE_ORDER) + ';\n';
+        out += 'window.CHATS = [\n';
+        D.chats.forEach(it => {
+            if (it.type === 'date') out += '  { ' + ordered(it, ['id', 'type', 'text']).map(k => keyOf(k) + ': ' + val(it[k], '  ')).join(', ') + ' },\n';
+            else out += '  ' + obj(it, '  ', POST_ORDER) + ',\n';
+        });
+        return out + '];\n';
+    }
+
+    // ---------- 사진 ----------
+    const imgsOf = it => Array.isArray(it.images) ? it.images.slice() : (it.image ? [it.image] : []);
+    function setImgs(it, arr) {
+        arr = arr.filter(Boolean);
+        if (arr.length > 1) { it.images = arr; delete it.image; }
+        else { delete it.images; it.image = arr[0] || ''; }
+    }
+    function realPath(p) {
+        if (!p || /^(data:|blob:|https?:)/i.test(p)) return p;
+        const clean = String(p).replace(/^\.\//, '');
+        if (D.assets.indexOf(clean) >= 0) return clean;
+        const hit = D.assets.find(a => a.toLowerCase() === clean.toLowerCase());
+        return hit || p;
+    }
+    function fixCase() {
+        if (D.site.avatar) D.site.avatar = realPath(D.site.avatar);
+        D.chats.forEach(it => {
+            if (it.image) it.image = realPath(it.image);
+            if (Array.isArray(it.images)) it.images = it.images.map(realPath);
+            if (it.youtube && it.youtube.thumb) it.youtube.thumb = realPath(it.youtube.thumb);
+        });
+    }
+    function showUrl(p) {
+        if (!p) return '';
+        if (D.pending[p]) return D.pending[p].url;
+        if (D.uploaded[p]) return D.uploaded[p];
+        if (/^(data:|blob:|https?:)/i.test(p)) return p;
+        return rawBase() + String(p).replace(/^\.\//, '').split('/').map(encodeURIComponent).join('/');
+    }
+    function nextAssetPath(ext) {
+        const used = new Set(D.assets.concat(Object.keys(D.pending)).map(p => p.toLowerCase().replace(/\.[^./]+$/, '')));
+        let n = 1;
+        while (used.has('assets/' + n)) n++;
+        return 'assets/' + n + '.' + ext;
+    }
+    function addFile(file) {
+        if (!file || !/^image\//.test(file.type)) { toast('사진 파일(png·jpg·webp·gif)만 넣을 수 있어요.', 'warn'); return null; }
+        if (file.size > 20 * 1024 * 1024) { toast('사진이 너무 커요 (20MB 넘음). 줄여서 넣어 주세요.', 'warn'); return null; }
+        const ext = ({ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' })[file.type] || 'png';
+        const path = nextAssetPath(ext);
+        D.pending[path] = { file: file, url: URL.createObjectURL(file) };
+        return path;
+    }
+    function usedPaths() {
+        const s = new Set();
+        const add = p => { if (p) s.add(p); };
+        add(D.site.avatar);
+        D.chats.forEach(it => { imgsOf(it).forEach(add); if (it.youtube) add(it.youtube.thumb); });
+        return s;
+    }
+
+    // ---------- 새 칸 ----------
+    function nowLabel() {
+        const d = new Date(), h = d.getHours(), m = d.getMinutes();
+        return (h < 12 ? '오전' : '오후') + ' ' + (h % 12 || 12) + ':' + (m < 10 ? '0' : '') + m;
+    }
+    const todayLabel = () => { const d = new Date(); return (d.getMonth() + 1) + '월 ' + d.getDate() + '일'; };
+    function uniqueId(base) {
+        const ids = new Set(D.chats.map(x => x.id));
+        if (!ids.has(base)) return base;
+        let n = 2;
+        while (ids.has(base + '-' + n)) n++;
+        return base + '-' + n;
+    }
+    function newPost() {
+        let max = 0;
+        D.chats.forEach(x => { const m = /^post-(\d+)$/.exec(x.id || ''); if (m) max = Math.max(max, +m[1]); });
+        return { id: uniqueId('post-' + (max + 1)), type: 'post', image: '', text: '', hearts: 0, likes: 0, views: 0, time: nowLabel() };
+    }
+    function newDate() {
+        const d = new Date();
+        return { id: uniqueId('day-' + (d.getMonth() + 1) + String(d.getDate()).padStart(2, '0')), type: 'date', text: todayLabel() };
+    }
+
+    // ---------- 왼쪽 칸 그리기 ----------
+    const cardOf = i => i === -2 ? $('#chan') : $('#list .card[data-i="' + i + '"]');
+    function grow(ta) { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px'; }
+    const growAll = () => $$('#edit textarea').forEach(grow);
+
+    function renderChannel() {
+        const s = D.site;
+        const box = $('#chan');
+        box.classList.toggle('sel', sel === -2);
+        box.innerHTML =
+            '<div class="ch"><span class="tag c">채널</span><b>맨 위 채널 정보</b></div>' +
+            '<div class="chgrid">' +
+            '<button class="av" type="button" data-act="avatar" title="프로필 사진 바꾸기"><img src="' + esc(showUrl(s.avatar)) + '" alt=""><span>사진 바꾸기</span></button>' +
+            '<div>' +
+            '<label class="fl"><span>채널 이름</span><input data-s="channelName" value="' + esc(s.channelName) + '"></label>' +
+            '<div class="two">' +
+            '<label class="fl"><span>구독자 줄 (이름 밑 글)</span><input data-s="subscribers" value="' + esc(s.subscribers) + '" placeholder="구독자 827명"></label>' +
+            '<label class="fl"><span>이름 옆 표시</span><input data-s="badge" value="' + esc(s.badge) + '" placeholder="비워 두면 없음"></label>' +
+            '</div></div></div>' +
+            '<details class="more"><summary>화면에 안 나오는 칸</summary>' +
+            '<label class="fl"><span>채널 들어가기 링크</span><input data-s="joinUrl" value="' + esc(s.joinUrl) + '"></label>' +
+            '<label class="fl"><span>들어가기 버튼 글</span><input data-s="joinLabel" value="' + esc(s.joinLabel) + '"></label>' +
+            '</details>';
+    }
+    const iconBtns = '<button class="ic" type="button" data-act="up" title="위로">↑</button><button class="ic" type="button" data-act="down" title="아래로">↓</button><button class="ic del" type="button" data-act="del" title="지우기">🗑</button>';
+    const addRow = '<div class="addrow"><button type="button" data-act="addpost">＋ 아래에 글</button><button type="button" data-act="adddate">＋ 아래에 날짜</button></div>';
+    function dateCard(it, i) {
+        return '<div class="card date' + (i === sel ? ' sel' : '') + '" data-i="' + i + '">' +
+            '<div class="ch"><span class="tag d">날짜</span><input data-f="text" value="' + esc(it.text) + '" placeholder="9월 17일"><span class="sp"></span>' + iconBtns + '</div>' +
+            addRow + '</div>';
+    }
+    function postCard(it, i) {
+        const imgs = imgsOf(it);
+        const yt = it.youtube || {};
+        const more = !!(it.disclaimer || it.youtube);
+        const num = (f, icon, title) => '<label title="' + title + '">' + icon + '<input data-f="' + f + '" inputmode="numeric" value="' + esc(it[f] == null ? 0 : it[f]) + '"></label>';
+        return '<div class="card post' + (i === sel ? ' sel' : '') + '" data-i="' + i + '">' +
+            '<div class="ch"><span class="tag">글</span><span class="cid">' + esc(it.id) + '</span><span class="sp"></span>' + iconBtns + '</div>' +
+            '<div class="ph' + (imgs.length ? '' : ' empty') + '">' +
+            imgs.map((p, k) => '<div class="th" data-act="imgrep" data-k="' + k + '" title="눌러서 다른 사진으로 바꾸기"><img src="' + esc(showUrl(p)) + '" alt="">' +
+                (D.pending[p] ? '<span class="new">새 사진</span>' : '') +
+                '<button class="x" type="button" data-act="imgdel" data-k="' + k + '" title="사진 빼기">✕</button></div>').join('') +
+            '<button class="th add" type="button" data-act="imgadd">＋ 사진</button></div>' +
+            '<textarea data-f="text" rows="2" placeholder="글 내용">' + esc(it.text) + '</textarea>' +
+            '<div class="nums">' + num('hearts', '❤️', '하트 수') + num('likes', '👍', '좋아요 수') + num('views', '👁', '조회수') +
+            '<label title="올린 시간">🕒<input data-f="time" value="' + esc(it.time) + '" placeholder="오후 3:09"><button class="now" type="button" data-act="now">지금</button></label></div>' +
+            '<details class="more"' + (more ? ' open' : '') + '><summary>더 보기 · 아래 작은 글 · 유튜브 카드</summary>' +
+            '<label class="fl"><span>글 아래 작은 기울임 글</span><textarea data-f="disclaimer" rows="1" placeholder="비워 두면 없음">' + esc(it.disclaimer) + '</textarea></label>' +
+            '<div class="two">' +
+            '<label class="fl"><span>유튜브 카드 · 영상 주소</span><input data-f="yt.url" value="' + esc(yt.url) + '" placeholder="https://youtu.be/…"></label>' +
+            '<label class="fl"><span>위 작은 글</span><input data-f="yt.label" value="' + esc(yt.label) + '" placeholder="YouTube"></label>' +
+            '</div>' +
+            '<label class="fl"><span>영상 제목</span><input data-f="yt.title" value="' + esc(yt.title) + '"></label>' +
+            '<label class="fl"><span>영상 설명</span><textarea data-f="yt.desc" rows="1">' + esc(yt.desc) + '</textarea></label>' +
+            '<div class="ytrow"><label class="fl"><span>썸네일 사진</span><input data-f="yt.thumb" value="' + esc(yt.thumb) + '" placeholder="assets/yt-thumb.jpg"></label>' +
+            '<button class="btn small" type="button" data-act="ytthumb" style="margin-bottom:5px">사진 고르기</button></div>' +
+            '</details>' + addRow + '</div>';
+    }
+    function renderList() {
+        $('#list').innerHTML = D.chats.map((it, i) => it.type === 'date' ? dateCard(it, i) : postCard(it, i)).join('');
+        const posts = D.chats.filter(x => x.type !== 'date').length;
+        $('#listCount').textContent = '글 ' + posts + '개 · 날짜 ' + (D.chats.length - posts) + '개 · 맨 아래가 화면 맨 아래';
+        growAll();
+    }
+
+    // ---------- 고른 칸 ----------
+    function select(i, f, from) {
+        sel = i;
+        $$('#edit .card.sel').forEach(c => c.classList.remove('sel'));
+        const card = cardOf(i);
+        if (card) {
+            card.classList.add('sel');
+            if (from !== 'list') card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            if (f === 'photo') { openPicker({ kind: 'post', i: i, k: 0 }); }
+            else if (f === 'avatar') { openPicker({ kind: 'avatar' }); }
+            else if (f && !(from === 'pv' && f === 'text')) {
+                if (f === 'yt') f = 'yt.title';
+                const el = card.querySelector('[data-f="' + f + '"], [data-s="' + f + '"]');
+                if (el) {
+                    const det = el.closest('details');
+                    if (det) det.open = true;
+                    if (isMobile() && from === 'pv') switchTab(false);
+                    el.focus({ preventScroll: true });
+                    el.scrollIntoView({ block: 'nearest' });
+                    if (el.select && el.tagName === 'INPUT') el.select();
+                }
+            }
+        }
+        if (from === 'add' || from === 'move' || from === 'undo' || from === 'pick') PV.wantScroll = true;
+        markPvSel(from !== 'pv');
+    }
+
+    // ---------- 미리보기 ----------
+    const PV = { frames: [], front: null, seq: 0, timer: 0 };
+    const PV_STYLE = '<style>' +
+        '.adm-sel{outline:2px solid #ffd34d!important;outline-offset:3px}' +
+        '.msg,.date-chip span,header.tg{cursor:pointer}' +
+        '.msg:hover,.date-chip span:hover{outline:1px dashed rgba(255,255,255,.35);outline-offset:3px}' +
+        '[contenteditable]{cursor:text}[contenteditable]:focus{outline:none;background:rgba(255,255,255,.07);border-radius:4px}' +
+        'footer.composer{pointer-events:none}' +
+        '</style>';
+    const safeJson = v => JSON.stringify(v).replace(/</g, '\\u003c').replace(new RegExp(String.fromCharCode(8232), 'g'), '\\u2028').replace(new RegExp(String.fromCharCode(8233), 'g'), '\\u2029');
+    function pvData() {
+        const site = Object.assign({}, D.site);
+        if (site.avatar) site.avatar = showUrl(site.avatar);
+        const chats = D.chats.map(it => {
+            const c = JSON.parse(JSON.stringify(it));
+            if (c.image) c.image = showUrl(c.image);
+            if (Array.isArray(c.images)) c.images = c.images.map(showUrl);
+            if (c.youtube && c.youtube.thumb) c.youtube.thumb = showUrl(c.youtube.thumb);
+            return c;
+        });
+        return { site: site, chats: chats };
+    }
+    function buildPv() {
+        const d = pvData();
+        const data = '<script>window.SITE=' + safeJson(d.site) + ';window.CHATS=' + safeJson(d.chats) + ';<\/script>';
+        let html = D.indexHtml, done = false;
+        html = html.replace(/<script>\s*document\.write\(.*chats\.js.*<\/script>/, () => { done = true; return data; });
+        if (!done) html = html.replace(/<script[^>]*\bsrc=["']?(\.\/)?chats\.js[^>]*>\s*<\/script>/i, () => { done = true; return data; });
+        if (!done) html = html.replace(/<\/head>/i, () => data + '</head>');
+        html = html.replace(/navigator\.serviceWorker\.register\([^)]*\)/g, 'Promise.resolve()');
+        html = html.replace(/<head[^>]*>/i, m => m + '<base href="' + esc(rawBase()) + '">' + PV_STYLE);
+        return html;
+    }
+    function pvSoon(ms) { clearTimeout(PV.timer); PV.timer = setTimeout(() => pvRender(false), ms == null ? 220 : ms); }
+    function editingInPv() {
+        try { const a = PV.front.contentDocument.activeElement; return document.activeElement === PV.front && a && a.isContentEditable; }
+        catch (e) { return false; }
+    }
+    function pvRender(first) {
+        if (!D.indexHtml) return;
+        if (!first && editingInPv()) { pvSoon(700); return; }
+        const seq = ++PV.seq;
+        const front = PV.front, back = PV.frames[0] === front ? PV.frames[1] : PV.frames[0];
+        let keep = null;
+        try { const f = front.contentDocument.getElementById('feed'); if (f) keep = { top: f.scrollTop, bottom: f.scrollHeight - f.scrollTop - f.clientHeight < 4 }; } catch (e) {}
+        back.onload = () => {
+            if (seq !== PV.seq) return;
+            try { wirePv(back); } catch (e) { console.error(e); }
+            try {
+                const feed = back.contentDocument.getElementById('feed');
+                if (feed && keep) feed.scrollTop = keep.bottom ? feed.scrollHeight : keep.top;
+            } catch (e) {}
+            back.classList.add('on');
+            front.classList.remove('on');
+            PV.front = back;
+            markPvSel(!!PV.wantScroll);
+            PV.wantScroll = false;
+        };
+        back.srcdoc = buildPv();
+    }
+    function wirePv(f) {
+        const doc = f.contentDocument;
+        if (!doc) return;
+        const feed = doc.getElementById('feed');
+        if (feed) {
+            Array.from(feed.children).forEach((el, i) => {
+                const it = D.chats[i];
+                if (!it) return;
+                el.setAttribute('data-adm-i', i);
+                const t = it.type === 'date' ? el.querySelector('span') : el.querySelector('.txt');
+                if (!t) return;
+                t.setAttribute('contenteditable', 'plaintext-only');
+                if (t.contentEditable !== 'plaintext-only') t.setAttribute('contenteditable', 'true');
+                t.setAttribute('spellcheck', 'false');
+                t.addEventListener('input', () => {
+                    const v = t.innerText.replace(/\n$/, '');
+                    it.text = v;
+                    const card = cardOf(D.chats.indexOf(it));
+                    const fld = card && card.querySelector('[data-f="text"]');
+                    if (fld) { fld.value = v; if (fld.tagName === 'TEXTAREA') grow(fld); }
+                    changed(false);
+                });
+                t.addEventListener('keydown', e => { if (it.type === 'date' && e.key === 'Enter') { e.preventDefault(); t.blur(); } });
+            });
+        }
+        doc.addEventListener('click', onPvClick, true);
+        doc.addEventListener('paste', onPaste, true);
+        doc.addEventListener('keydown', onKey, true);
+    }
+    function onPvClick(e) {
+        const t = e.target;
+        if (!t || !t.closest) return;
+        if (t.closest('a')) e.preventDefault();
+        const chip = t.closest('.chip');
+        if (chip) { e.preventDefault(); e.stopPropagation(); }
+        const box = t.closest('[data-adm-i]');
+        if (box) {
+            const it = D.chats[+box.getAttribute('data-adm-i')];
+            const i = D.chats.indexOf(it);
+            if (i < 0) return;
+            let f = 'text';
+            if (chip) f = chip.getAttribute('data-kind') === 'heart' ? 'hearts' : 'likes';
+            else if (t.closest('.views-num')) f = 'views';
+            else if (t.closest('.meta-right')) f = 'time';
+            else if (t.closest('.photos')) f = 'photo';
+            else if (t.closest('.yt')) f = 'yt';
+            else if (t.closest('.disc')) f = 'disclaimer';
+            else if (t.closest('.author')) { select(-2, 'channelName', 'pv'); return; }
+            select(i, f, 'pv');
+            return;
+        }
+        if (t.closest('header.tg, .winbar')) {
+            e.preventDefault();
+            select(-2, t.closest('#avatar') ? 'avatar' : t.closest('#subs') ? 'subscribers' : 'channelName', 'pv');
+        }
+    }
+    function markPvSel(scroll) {
+        let doc;
+        try { doc = PV.front && PV.front.contentDocument; } catch (e) { return; }
+        if (!doc || !doc.body) return;
+        doc.querySelectorAll('.adm-sel').forEach(x => x.classList.remove('adm-sel'));
+        let el = null;
+        if (sel === -2) el = doc.querySelector('header.tg');
+        else if (sel >= 0) {
+            const box = doc.querySelector('[data-adm-i="' + sel + '"]');
+            el = box && (box.classList.contains('date-chip') ? box.querySelector('span') : box);
+        }
+        if (!el) return;
+        el.classList.add('adm-sel');
+        if (scroll && sel >= 0) {
+            const feed = doc.getElementById('feed');
+            if (!feed) return;
+            const r = el.getBoundingClientRect(), fr = feed.getBoundingClientRect();
+            if (r.top < fr.top + 8 || r.bottom > fr.bottom - 8) {
+                feed.scrollTo({ top: feed.scrollTop + (r.top - fr.top) - Math.max(10, (fr.height - r.height) / 2), behavior: 'smooth' });
+            }
+        }
+    }
+    function fitPv() {
+        const area = $('#pvArea');
+        const w = area.clientWidth - 20, h = area.clientHeight - 14;
+        if (w <= 0 || h <= 0) return;
+        const s = Math.min(1, w / 430, h / 860);
+        $('#pvWrap').style.transform = 'scale(' + s + ')';
+        $('#pvHold').style.width = (430 * s) + 'px';
+        $('#pvHold').style.height = (860 * s) + 'px';
+    }
+
+    // ---------- 바뀜 표시 ----------
+    function isDirty() { return !!D.loaded && serialize() !== D.loaded; }
+    function updateDirty() {
+        const d = isDirty();
+        $('#dirty').hidden = !d;
+        const b = $('#btnSave');
+        b.disabled = !d || S.saving;
+        b.textContent = S.saving ? '저장하는 중…' : '💾 저장';
+        document.title = (d ? '● ' : '') + '텔레그램 관리자';
+    }
+    function changed(pv) { updateDirty(); if (pv !== false) pvSoon(); }
+
+    // ---------- 왼쪽 칸 입력 ----------
+    $('#edit').addEventListener('input', e => {
+        const t = e.target;
+        if (t.dataset.s) { D.site[t.dataset.s] = t.value; changed(); return; }
+        const card = t.closest('.card[data-i]');
+        const f = t.dataset.f;
+        if (!card || !f) return;
+        const it = D.chats[+card.dataset.i];
+        if (!it) return;
+        if (f === 'hearts' || f === 'likes' || f === 'views') {
+            const digits = t.value.replace(/[^\d]/g, '');
+            if (digits !== t.value) t.value = digits;
+            it[f] = parseInt(digits, 10) || 0;
+        } else if (f.indexOf('yt.') === 0) {
+            const k = f.slice(3);
+            it.youtube = it.youtube || {};
+            it.youtube[k] = t.value;
+            if (YT_ORDER.every(x => !it.youtube[x])) delete it.youtube;
+        } else {
+            it[f] = t.value;
+        }
+        if (t.tagName === 'TEXTAREA') grow(t);
+        changed();
+    });
+    $('#edit').addEventListener('focusin', e => {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        const i = card.id === 'chan' ? -2 : +card.dataset.i;
+        if (i !== sel) select(i, null, 'list');
+    });
+    $('#edit').addEventListener('click', e => {
+        const b = e.target.closest('[data-act]');
+        const card = e.target.closest('.card');
+        const i = card ? (card.id === 'chan' ? -2 : +card.dataset.i) : -1;
+        if (!b) { if (card && i !== sel) select(i, null, 'list'); return; }
+        const act = b.dataset.act;
+        const it = i >= 0 ? D.chats[i] : null;
+        const k = b.dataset.k != null ? +b.dataset.k : null;
+        if (act === 'avatar') { openPicker({ kind: 'avatar' }); return; }
+        if (act === 'enddate' || act === 'endpost') {
+            D.chats.push(act === 'enddate' ? newDate() : newPost());
+            sel = D.chats.length - 1;
+            renderList(); changed();
+            select(sel, 'text', 'add');
+            return;
+        }
+        if (!it) return;
+        if (act === 'up' || act === 'down') {
+            const j = act === 'up' ? i - 1 : i + 1;
+            if (j < 0 || j >= D.chats.length) return;
+            const tmp = D.chats[i]; D.chats[i] = D.chats[j]; D.chats[j] = tmp;
+            sel = j; renderList(); changed(); select(j, null, 'move');
+        } else if (act === 'del') {
+            undo = { chats: JSON.stringify(D.chats), sel: i };
+            D.chats.splice(i, 1);
+            sel = -1; renderList(); changed();
+            toast((it.type === 'date' ? '날짜 칸' : '글') + ' 하나를 지웠어요.', '', false, [{ label: '되돌리기', fn: doUndo }]);
+        } else if (act === 'addpost' || act === 'adddate') {
+            D.chats.splice(i + 1, 0, act === 'addpost' ? newPost() : newDate());
+            sel = i + 1; renderList(); changed();
+            select(i + 1, 'text', 'add');
+        } else if (act === 'imgadd') {
+            openPicker({ kind: 'post', i: i });
+        } else if (act === 'imgrep') {
+            openPicker({ kind: 'post', i: i, k: k });
+        } else if (act === 'imgdel') {
+            e.stopPropagation();
+            const arr = imgsOf(it); arr.splice(k, 1); setImgs(it, arr);
+            renderList(); changed(); select(i, null, 'list');
+        } else if (act === 'ytthumb') {
+            openPicker({ kind: 'yt', i: i });
+        } else if (act === 'now') {
+            it.time = nowLabel();
+            const inp = card.querySelector('[data-f="time"]'); if (inp) inp.value = it.time;
+            changed();
+        }
+    });
+    function doUndo() {
+        if (!undo) return;
+        D.chats = JSON.parse(undo.chats);
+        sel = undo.sel; undo = null;
+        renderList(); changed(); select(sel, null, 'undo');
+    }
+
+    // ---------- 사진 고르기 창 ----------
+    let pickTarget = null;
+    function openPicker(target) {
+        pickTarget = target;
+        const all = D.assets.concat(Object.keys(D.pending).filter(p => D.assets.indexOf(p) < 0));
+        $('#imgGrid').innerHTML = all.length
+            ? all.map(p => '<button class="pick" type="button" data-p="' + esc(p) + '"><img src="' + esc(showUrl(p)) + '" alt="" loading="lazy"><span>' + esc(p.replace(/^assets\//, '')) + (D.pending[p] ? ' · 새 사진' : '') + '</span></button>').join('')
+            : '<p class="help">아직 올린 사진이 없어요.</p>';
+        if (!$('#imgDlg').open) $('#imgDlg').showModal();
+    }
+    function applyPick(path) {
+        const t = pickTarget;
+        if ($('#imgDlg').open) $('#imgDlg').close();
+        pickTarget = null;
+        if (!t || !path) return;
+        if (t.kind === 'avatar') {
+            D.site.avatar = path; renderChannel(); changed(); select(-2, null, 'pick');
+            return;
+        }
+        const it = D.chats[t.i];
+        if (!it) return;
+        if (t.kind === 'yt') { it.youtube = it.youtube || {}; it.youtube.thumb = path; }
+        else { const arr = imgsOf(it); if (t.k != null && t.k < arr.length) arr[t.k] = path; else arr.push(path); setImgs(it, arr); }
+        renderList(); changed(); select(t.i, null, 'pick');
+    }
+    $('#imgGrid').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) applyPick(b.dataset.p); });
+    $('#imgClose').addEventListener('click', () => { pickTarget = null; $('#imgDlg').close(); });
+    $('#imgUp').addEventListener('click', () => $('#filePick').click());
+    $('#filePick').addEventListener('change', () => {
+        const f = $('#filePick').files && $('#filePick').files[0];
+        $('#filePick').value = '';
+        const p = addFile(f);
+        if (p) { applyPick(p); toast('새 사진을 넣었어요. 저장하면 같이 올라가요.'); }
+    });
+    function onPaste(e) {
+        const files = Array.from((e.clipboardData && e.clipboardData.files) || []).filter(f => /^image\//.test(f.type));
+        if (!files.length) return;
+        let target = null;
+        if ($('#imgDlg').open) target = pickTarget;
+        else if (sel >= 0 && D.chats[sel] && D.chats[sel].type !== 'date') target = { kind: 'post', i: sel };
+        else if (sel === -2) target = { kind: 'avatar' };
+        e.preventDefault();
+        if (!target) { toast('사진을 넣을 글을 먼저 눌러 고른 뒤 붙여넣어 주세요.', 'warn'); return; }
+        const p = addFile(files[0]);
+        if (!p) return;
+        pickTarget = target;
+        applyPick(p);
+        toast('사진을 붙여넣었어요. 저장하면 같이 올라가요.');
+    }
+    document.addEventListener('paste', onPaste);
+    $('#list').addEventListener('dragover', e => {
+        if (!e.dataTransfer || Array.from(e.dataTransfer.types || []).indexOf('Files') < 0) return;
+        const card = e.target.closest('.card.post');
+        if (!card) return;
+        e.preventDefault();
+        $$('#list .card.drop').forEach(c => { if (c !== card) c.classList.remove('drop'); });
+        card.classList.add('drop');
+    });
+    $('#list').addEventListener('dragleave', e => { const card = e.target.closest('.card.post'); if (card && !card.contains(e.relatedTarget)) card.classList.remove('drop'); });
+    $('#list').addEventListener('drop', e => {
+        const card = e.target.closest('.card.post');
+        $$('#list .card.drop').forEach(c => c.classList.remove('drop'));
+        if (!card || !e.dataTransfer || !e.dataTransfer.files.length) return;
+        e.preventDefault();
+        const p = addFile(e.dataTransfer.files[0]);
+        if (!p) return;
+        pickTarget = { kind: 'post', i: +card.dataset.i };
+        applyPick(p);
+        toast('사진을 넣었어요. 저장하면 같이 올라가요.');
+    });
+    window.addEventListener('dragover', e => e.preventDefault());
+    window.addEventListener('drop', e => e.preventDefault());
+
+    // ---------- 불러오기 ----------
+    function showLoadErr(msg) {
+        const el = $('#loadErr');
+        el.hidden = !msg;
+        el.innerHTML = msg ? '⚠ ' + esc(msg) + ' <button class="btn small" type="button" id="retry" style="margin-left:8px">다시 시도</button>' : '';
+        const r = $('#retry'); if (r) r.onclick = loadAll;
+    }
+    async function loadAll() {
+        setConn('불러오는 중…', '');
+        showLoadErr('');
+        try {
+            const base = repoPath();
+            const res = await Promise.all([
+                gh(base + '/contents/chats.js' + ref()),
+                gh(base + '/contents/index.html' + ref()),
+                gh(base + '/git/trees/' + encodeURIComponent(S.settings.branch) + '?recursive=1').catch(() => ({ tree: [] }))
+            ]);
+            const text = b64dec(res[0].content);
+            const p = parseChats(text);
+            Object.keys(D.pending).forEach(k => { try { URL.revokeObjectURL(D.pending[k].url); } catch (e) {} });
+            D.header = p.header; D.site = p.site; D.chats = p.chats;
+            D.sha = res[0].sha;
+            D.indexHtml = b64dec(res[1].content);
+            D.assets = (res[2].tree || []).filter(t => t.type === 'blob' && /^assets\/[^/]+\.(png|jpe?g|webp|gif)$/i.test(t.path)).map(t => t.path);
+            D.pending = {};
+            fixCase();
+            D.loaded = serialize();
+            sel = -1; undo = null;
+            renderChannel(); renderList(); updateDirty();
+            pvRender(true);
+            setConnDefault();
+        } catch (e) {
+            setConn('불러오지 못함', 'bad');
+            showLoadErr(e.message);
+        }
+    }
+
+    // ---------- 저장 ----------
+    async function save() {
+        if (S.saving || !isDirty()) return;
+        if (!S.settings.token) { openSettings('저장하려면 GitHub 비밀 키가 필요합니다. 아래에 넣어 주세요.'); return; }
+        S.saving = true; updateDirty();
+        setConn('저장하는 중…', '');
+        try {
+            const base = repoPath(), br = S.settings.branch;
+            const head = (await gh(base + '/git/ref/heads/' + encodeURIComponent(br))).object.sha;
+            const commit = await gh(base + '/git/commits/' + head);
+            const tree = await gh(base + '/git/trees/' + commit.tree.sha);
+            const remote = (tree.tree || []).find(t => t.path === 'chats.js');
+            if (remote && remote.sha !== D.sha) {
+                const go = confirm('GitHub 에서 그 사이 chats.js 가 바뀌었어요.\n(GitHub 화면에서 직접 고쳤거나, 다른 창에서 저장했을 때 이렇게 됩니다)\n\n[확인] = 지금 이 화면에서 고친 것으로 덮어쓰기\n[취소] = 저장 멈추기 (↻ 다시 불러오기를 누르면 GitHub 것이 보여요)');
+                if (!go) { setConnDefault(); return; }
+            }
+            const text = serialize();
+            parseChats(text);
+            const used = usedPaths();
+            const ups = Object.keys(D.pending).filter(p => used.has(p));
+            const entries = [{ path: 'chats.js', mode: '100644', type: 'blob', content: text }];
+            for (let n = 0; n < ups.length; n++) {
+                setConn('사진 올리는 중… ' + (n + 1) + '/' + ups.length, '');
+                const b = await gh(base + '/git/blobs', { method: 'POST', body: { content: await fileB64(D.pending[ups[n]].file), encoding: 'base64' } });
+                entries.push({ path: ups[n], mode: '100644', type: 'blob', sha: b.sha });
+            }
+            setConn('저장하는 중…', '');
+            const nt = await gh(base + '/git/trees', { method: 'POST', body: { base_tree: commit.tree.sha, tree: entries } });
+            const nc = await gh(base + '/git/commits', { method: 'POST', body: { message: '관리자 페이지에서 수정' + (ups.length ? ' (새 사진 ' + ups.length + '장)' : ''), tree: nt.sha, parents: [head] } });
+            await gh(base + '/git/refs/heads/' + encodeURIComponent(br), { method: 'PATCH', body: { sha: nc.sha } });
+            const c = (nt.tree || []).find(t => t.path === 'chats.js');
+            if (c) D.sha = c.sha;
+            Object.keys(D.pending).forEach(p => {
+                if (ups.indexOf(p) >= 0) { D.uploaded[p] = D.pending[p].url; if (D.assets.indexOf(p) < 0) D.assets.push(p); }
+                else { try { URL.revokeObjectURL(D.pending[p].url); } catch (e) {} }
+            });
+            D.pending = {};
+            D.loaded = text;
+            renderList(); renderChannel(); select(sel, null, 'save');
+            setConn('홈페이지 반영 기다리는 중…', 'warn');
+            toast('저장했어요. 홈페이지에 바뀌는지 확인하는 중이에요…', 'ok');
+            pollDeploy(text);
+        } catch (e) {
+            setConnDefault();
+            toast(e.message, 'bad', true, /권한|비밀 키/.test(e.message) ? [{ label: '연결 설정', fn: () => openSettings() }] : null);
+        } finally {
+            S.saving = false; updateDirty();
+        }
+    }
+    let pollRun = 0;
+    async function pollDeploy(text) {
+        const run = ++pollRun, t0 = Date.now();
+        const norm = s => s.replace(/\r\n/g, '\n').trim();
+        while (run === pollRun) {
+            await sleep(5000);
+            if (run !== pollRun) return;
+            const sec = Math.round((Date.now() - t0) / 1000);
+            if (sec > 600) {
+                setConnDefault();
+                toast('⚠ 10분이 지나도 홈페이지에 안 바뀌었어요. <a href="https://github.com/' + esc(S.settings.owner) + '/' + esc(S.settings.repo) + '/actions" target="_blank" rel="noopener">GitHub 진행 화면</a>을 봐 주세요.', 'bad', true, null, true);
+                return;
+            }
+            setConn('홈페이지 반영 기다리는 중… ' + sec + '초', 'warn');
+            try {
+                const r = await fetch(siteUrl() + 'chats.js?v=' + Date.now(), { cache: 'no-store' });
+                if (r.ok && norm(await r.text()) === norm(text)) {
+                    setConnDefault();
+                    toast('✅ 홈페이지에 바뀌었어요 (' + sec + '초). 휴대폰에서 새로고침하면 보여요.', 'ok', true);
+                    return;
+                }
+            } catch (e) {}
+        }
+    }
+
+    // ---------- 알림 ----------
+    function toast(msg, kind, sticky, actions, html) {
+        const el = document.createElement('div');
+        el.className = 'toast' + (kind ? ' ' + kind : '');
+        const m = document.createElement('div');
+        m.className = 'msg';
+        if (html) m.innerHTML = msg; else m.textContent = msg;
+        el.appendChild(m);
+        (actions || []).forEach(a => {
+            const b = document.createElement('button');
+            b.className = 'btn small'; b.type = 'button'; b.textContent = a.label;
+            b.onclick = () => { el.remove(); a.fn(); };
+            el.appendChild(b);
+        });
+        const x = document.createElement('button');
+        x.className = 'btn small'; x.type = 'button'; x.textContent = '✕';
+        x.onclick = () => el.remove();
+        el.appendChild(x);
+        $('#toasts').appendChild(el);
+        while ($('#toasts').children.length > 4) $('#toasts').firstChild.remove();
+        if (!sticky) setTimeout(() => el.remove(), actions ? 8000 : 4500);
+    }
+
+    // ---------- 연결 설정 창 ----------
+    function openSettings(msg) {
+        const mine = lsGet(LS).settings || {};
+        $('#setMsg').hidden = !msg;
+        $('#setMsg').textContent = msg || '';
+        $('#setToken').value = mine.token || '';
+        $('#setToken').type = 'password';
+        $('#setShow').textContent = '보기';
+        $('#setNova').hidden = !(lsGet('novadexAdmin').settings || {}).token;
+        $('#howAdd').open = S.tokenFrom === 'nova' && /권한/.test(msg || '');
+        $('#setOwner').value = S.settings.owner;
+        $('#setRepo').value = S.settings.repo;
+        $('#setBranch').value = S.settings.branch;
+        $$('.repoName').forEach(x => { x.textContent = S.settings.repo; });
+        $('#setDlg').showModal();
+    }
+    $('#btnSet').addEventListener('click', () => openSettings());
+    $('#setShow').addEventListener('click', () => {
+        const t = $('#setToken');
+        t.type = t.type === 'password' ? 'text' : 'password';
+        $('#setShow').textContent = t.type === 'password' ? '보기' : '숨기기';
+    });
+    $('#setCancel').addEventListener('click', () => $('#setDlg').close());
+    $('#setClear').addEventListener('click', () => { $('#setToken').value = ''; });
+    $('#setOk').addEventListener('click', () => {
+        const s = {
+            token: $('#setToken').value.trim(),
+            owner: $('#setOwner').value.trim() || DEFAULT.owner,
+            repo: $('#setRepo').value.trim() || DEFAULT.repo,
+            branch: $('#setBranch').value.trim() || DEFAULT.branch
+        };
+        const moved = s.owner !== S.settings.owner || s.repo !== S.settings.repo || s.branch !== S.settings.branch;
+        const o = lsGet(LS); o.settings = s; lsSet(LS, o);
+        loadSettings();
+        $('#setDlg').close();
+        $('#btnSite').href = siteUrl();
+        if (moved) {
+            if (!isDirty() || confirm('저장소가 바뀌어서 새로 불러와요. 저장 안 한 수정은 사라집니다. 계속할까요?')) loadAll();
+        } else {
+            setConnDefault();
+            if (isDirty() && S.settings.token) toast('연결 설정을 저장했어요. 이제 💾 저장을 눌러 주세요.', 'ok');
+        }
+    });
+
+    // ---------- 그 밖 ----------
+    function onKey(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); save(); }
+    }
+    document.addEventListener('keydown', onKey);
+    $('#btnSave').addEventListener('click', save);
+    $('#btnReload').addEventListener('click', () => {
+        if (isDirty() && !confirm('GitHub 에서 다시 불러오면 저장 안 한 수정이 사라집니다. 계속할까요?')) return;
+        loadAll();
+    });
+    window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
+    function switchTab(pv) {
+        document.body.classList.toggle('m-pv', !!pv);
+        $('#tabEdit').classList.toggle('on', !pv);
+        $('#tabPv').classList.toggle('on', !!pv);
+        if (pv) setTimeout(() => { fitPv(); markPvSel(true); }, 0); else setTimeout(growAll, 0);
+    }
+    $('#tabEdit').addEventListener('click', () => switchTab(false));
+    $('#tabPv').addEventListener('click', () => switchTab(true));
+    if (window.ResizeObserver) new ResizeObserver(fitPv).observe($('#pvArea'));
+    window.addEventListener('resize', fitPv);
+
+    window.__tgAdmin = { D: D, serialize: serialize, isDirty: isDirty };
+    PV.frames = [$('#pvA'), $('#pvB')];
+    PV.front = PV.frames[0];
+    loadSettings();
+    $('#btnSite').href = siteUrl();
+    fitPv();
+    loadAll();
+})();
+</script>
+</body>
+</html>
