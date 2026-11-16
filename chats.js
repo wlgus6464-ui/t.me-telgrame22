@@ -11,73 +11,60 @@ window.SITE = {
   avatar: "assets/5.png"
 };
 window.CHATS = [
-  { id: "day-917", type: "date", text: "9월 17일" },
+  { id: "day-917", type: "date", text: "11월 13일" },
   {
     id: "post-1",
     type: "post",
     image: "",
-    text: "",
+    text: "종목명 : 마이쉘 (SHELL)\n거래소 : 빗썸\n매수가 : 25원~25.5원\n매도가 : 67원 (150% 정도 상승 예상)",
     disclaimer: "",
-    hearts: 55,
+    hearts: 10,
     likes: 6,
-    views: 740,
+    views: 17,
     time: "오후 3:09"
   },
-  { id: "day-918", type: "date", text: "9월 18일" },
+  { id: "day-918", type: "date", text: "11월 14일" },
   {
     id: "post-2",
     type: "post",
-    image: "",
-    text: "종목명 : 닐리온 (NIL)\n거래소 : 빗썸\n매수가 : 56원~57원\n매도가 : 200원 (250% 상승 예상)",
-    hearts: 84,
-    likes: 8,
-    views: 703,
-    time: "오후 8:17"
+    image: "assets/6.png",
+    text: "바로 어제 말씀드린 빗썸의 마이쉘코인의 상승이 운좋게도 하루만에 큰폭으로 나왔네요.\n다들 익절하시길 바라며 축하드립니다^^",
+    hearts: 5,
+    likes: 12,
+    views: 17,
+    time: "오전 10:17"
   },
-  { id: "day-919", type: "date", text: "9월 19일" },
   {
-    id: "post-3",
-    type: "post",
-    image: "assets/1.png",
-    text: "멀티버스엑스 9월 17일 추천 이후로 100% 상승 나왔습니다.\n수익보신분들 축하드리고, 도움되셨다면 하트 한번씩 눌러주세요!",
-    hearts: 201,
-    likes: 55,
-    views: 706,
-    time: "오후 1:56"
-  },
-  { id: "day-920", type: "date", text: "9월 20일" },
-  {
-    id: "post-4",
+    id: "post-15",
     type: "post",
     image: "",
-    text: "종목명 : 비쓰리 (B3)\n거래소 : 업비트 , 빗썸\n매수가 : 0.78원~0.8원\n매도가 : 1.3원 (70% 상승 예상)",
-    hearts: 127,
-    likes: 19,
-    views: 737,
-    time: "오후 5:44"
+    text: "종목명 : 폴리스웜 (NCT)\n거래소 : 업비트 , 빗썸\n매수가 : 8.5원~9원\n매도가 : 14원 (50% 정도 상승 예상)",
+    hearts: 10,
+    likes: 7,
+    views: 17,
+    time: "오후 12:32"
   },
-  { id: "day-921", type: "date", text: "9월 21일" },
+  { id: "day-921", type: "date", text: "11월 15일" },
   {
     id: "post-5",
     type: "post",
-    image: "",
-    text: "종목명 : 메타플렉스 (MPLX)\n거래소 : 빗썸\n매수가 : 45원~46원\n매도가 : 90원 (100% 상승 예상)",
+    image: "assets/7.png",
+    text: "전일 말씀드린 폴리스웜도 현재 반등이 나오고있습니다.\n시장이 혼란스러우니 이정도로 만족해야된다 생각하고 익절 추천드립니다^^",
     disclaimer: "",
-    hearts: 193,
-    likes: 14,
-    views: 541,
-    time: "오후 7:21"
+    hearts: 15,
+    likes: 2,
+    views: 17,
+    time: "오전 9:39"
   },
-  { id: "day-922", type: "date", text: "9월 22일" },
   {
     id: "post-6",
     type: "post",
     image: "",
-    text: "오늘은 큰 상승이 나올 코인의 자리가 안보이네요,,,\n하루정도는 매매 쉬어가도 되겠습니다^^\n굿밤되시길 바랍니다.",
-    hearts: 104,
-    likes: 60,
-    views: 267,
-    time: "오후 10:56"
+    text: "이더리움 재단 나흘 새 7,500개 처분\n\n이더리움 재단(Ethereum Foundation)이 최근 나흘 동안 이더리움(Ethereum) 7,500개를 시장에 내놓고 약 1,452만 USDS를 손에 쥐었다\n\n\nhttps://www.coinddak.com/news/articleView.html?idxno=9502",
+    hearts: 5,
+    likes: 2,
+    views: 17,
+    time: "오전 10:11"
   },
   { id: "day-923", type: "date", text: "9월 23일" },
   {
