@@ -506,15 +506,15 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
             '<textarea data-f="text" rows="2" placeholder="글 내용">' + esc(it.text) + '</textarea>' +
             '<div class="nums">' + num('hearts', '❤️', '하트 수') + num('likes', '👍', '좋아요 수') + num('views', '👁', '조회수') +
             '<label title="올린 시간">🕒<input data-f="time" value="' + esc(it.time) + '" placeholder="오후 3:09"><button class="now" type="button" data-act="now">지금</button></label></div>' +
-            '<details class="more"' + (more ? ' open' : '') + '><summary>더 보기 · 아래 작은 글 · 유튜브 카드</summary>' +
+            '<details class="more"' + (more ? ' open' : '') + '><summary>더 보기 · 아래 작은 글 · 링크 카드(유튜브·기사)</summary>' +
             '<label class="fl"><span>글 아래 작은 기울임 글</span><textarea data-f="disclaimer" rows="1" placeholder="비워 두면 없음">' + esc(it.disclaimer) + '</textarea></label>' +
             '<div class="two">' +
-            '<label class="fl"><span>유튜브 카드 · 영상 주소</span><input data-f="yt.url" value="' + esc(yt.url) + '" placeholder="https://youtu.be/…"></label>' +
-            '<label class="fl"><span>위 작은 글</span><input data-f="yt.label" value="' + esc(yt.label) + '" placeholder="YouTube"></label>' +
+            '<label class="fl"><span>링크 카드 · 주소 (유튜브·뉴스 기사)</span><input data-f="yt.url" value="' + esc(yt.url) + '" placeholder="https://…"></label>' +
+            '<label class="fl"><span>위 작은 글 (사이트 이름)</span><input data-f="yt.label" value="' + esc(yt.label) + '" placeholder="YouTube · 코인딱"></label>' +
             '</div>' +
-            '<label class="fl"><span>영상 제목</span><input data-f="yt.title" value="' + esc(yt.title) + '"></label>' +
-            '<label class="fl"><span>영상 설명</span><textarea data-f="yt.desc" rows="1">' + esc(yt.desc) + '</textarea></label>' +
-            '<div class="ytrow"><label class="fl"><span>썸네일 사진</span><input data-f="yt.thumb" value="' + esc(yt.thumb) + '" placeholder="assets/yt-thumb.jpg"></label>' +
+            '<label class="fl"><span>제목</span><input data-f="yt.title" value="' + esc(yt.title) + '"></label>' +
+            '<label class="fl"><span>설명</span><textarea data-f="yt.desc" rows="1">' + esc(yt.desc) + '</textarea></label>' +
+            '<div class="ytrow"><label class="fl"><span>카드 사진 (썸네일·기사 사진)</span><input data-f="yt.thumb" value="' + esc(yt.thumb) + '" placeholder="assets/… 또는 https://…"></label>' +
             '<button class="btn small" type="button" data-act="ytthumb" style="margin-bottom:5px">사진 고르기</button></div>' +
             '</details>' + addRow + '</div>';
     }
@@ -714,20 +714,77 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
     }
     function changed(pv) { updateDirty(); draftSoon(); if (pv !== false) pvSoon(); }
 
-    // ---------- 유튜브 카드 자동 ----------
+    // ---------- 링크 카드 자동 (유튜브·뉴스 기사) ----------
     // 글에 유튜브 주소를 넣으면 유튜브 카드(주소·제목·썸네일)를 저절로 채움.
-    // 영상 설명은 유튜브가 브라우저에 안 내줘서 '더 보기 → 영상 설명'에 직접 적음.
+    // 영상 설명은 유튜브가 브라우저에 안 내줘서 '더 보기 → 설명'에 직접 적음.
+    // 유튜브가 아닌 주소(뉴스 기사 등)는 텔레그램처럼 사이트 이름·제목·설명·사진을 그 페이지에서 읽어 와 같은 칸(youtube)에 적음.
     const YT_RE = /(?:youtube\.com\/(?:watch\?(?:[^\s#]*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/;
     const ytId = u => { const m = YT_RE.exec(String(u || '')); return m ? m[1] : ''; };
+    const linkKey = u => ytId(u) || String(u || '');
+    const hostOf = u => { const m = /^https?:\/\/(?:www\.)?([^\/?#:]+)/i.exec(String(u || '')); return m ? m[1] : ''; };
     function ytLink(text) {
         const urls = String(text || '').match(/https?:\/\/[^\s]+/g) || [];
-        for (const u of urls) { const id = ytId(u); if (id) return { url: u, id: id }; }
-        return null;
+        for (const u of urls) { const id = ytId(u); if (id) return { url: u, id: id, key: id }; }
+        return urls.length ? { url: urls[0], id: '', key: urls[0] } : null;
+    }
+    // 기사 페이지의 미리보기 정보(og:site_name·og:title·og:description·og:image)를 읽음.
+    // 브라우저는 다른 사이트 글을 바로 못 읽어서, 읽어 주는 무료 곳 두 군데를 차례로 씀.
+    async function pageMeta(url) {
+        const tidy = s => String(s || '').replace(/\s+/g, ' ').trim();
+        const abs = s => { try { const h = s ? new URL(s, url).href : ''; return /^https?:/i.test(h) ? h : ''; } catch (e) { return ''; } };
+        try {
+            const r = await fetch('https://api.microlink.io/?url=' + encodeURIComponent(url));
+            const j = await r.json();
+            const d = j && j.status === 'success' && j.data;
+            if (d && (d.title || (d.image && d.image.url))) {
+                return { site: tidy(d.publisher), title: tidy(d.title), desc: tidy(d.description), image: abs(d.image && d.image.url) };
+            }
+        } catch (e) {}
+        const r = await fetch('https://r.jina.ai/' + url, { headers: { 'X-Return-Format': 'html' } });
+        if (!r.ok) throw new Error(String(r.status));
+        const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+        const meta = (...ks) => {
+            for (const k of ks) { const el = doc.querySelector('meta[property="' + k + '"], meta[name="' + k + '"]'); if (el && el.getAttribute('content')) return el.getAttribute('content'); }
+            return '';
+        };
+        const tt = doc.querySelector('title');
+        const m = {
+            site: tidy(meta('og:site_name')),
+            title: tidy(meta('og:title', 'twitter:title') || (tt && tt.textContent)),
+            desc: tidy(meta('og:description', 'twitter:description', 'description')),
+            image: abs(meta('og:image', 'og:image:url', 'twitter:image'))
+        };
+        if (!m.title && !m.image) throw new Error('empty');
+        return m;
+    }
+    function pageApply(it, url) {
+        const keep = it.youtube && !it.youtube.url ? it.youtube : {};   // 주소 없이 적어 둔 칸은 살림
+        it.youtube = { url: url, label: keep.label || hostOf(url), title: keep.title || '', desc: keep.desc || '', thumb: keep.thumb || '' };
+        ytFields(it); changed();
+        const same = () => D.chats.indexOf(it) >= 0 && it.youtube && it.youtube.url === url;
+        pageMeta(url).then(m => {
+            if (!same()) return;
+            const y = it.youtube;
+            if (m.site && (!y.label || y.label === hostOf(url))) y.label = m.site;
+            if (!y.title && m.title) y.title = m.title;
+            if (!y.desc && m.desc) y.desc = m.desc;
+            if (!y.thumb && m.image) y.thumb = m.image;
+            ytFields(it); changed();
+            toast('링크 카드를 붙였어요 — 「' + (y.title || hostOf(url)) + '」', 'ok');
+        }).catch(() => {
+            if (same()) toast('기사 제목·사진을 못 가져왔어요. 더 보기 → 링크 카드에 제목·사진을 직접 넣어 주세요.', 'warn');
+        });
+    }
+    // 불러온 글 가운데 기사 링크는 있는데 카드가 없는 글 → 카드를 붙임 (💾 저장해야 사이트에 나옴)
+    function cardsFill() {
+        const todo = D.chats.filter(it => it.type !== 'date' && !it.youtube && (ytLink(it.text) || {}).id === '');
+        todo.forEach(ytApply);
+        if (todo.length) toast('기사 링크가 있는데 미리보기 카드가 없던 글 ' + todo.length + '개에 카드를 붙이는 중이에요. 💾 저장을 눌러야 사이트에 나와요.', 'ok');
     }
     const ytSeen = new WeakMap(), ytTimer = new WeakMap();
     function ytWatch(it, before) {
         if (!it || it.type === 'date') return;
-        if (!ytSeen.has(it)) { const o = ytLink(before); ytSeen.set(it, o ? o.id : ''); }
+        if (!ytSeen.has(it)) { const o = ytLink(before); ytSeen.set(it, o ? o.key : ''); }
         clearTimeout(ytTimer.get(it));
         ytTimer.set(it, setTimeout(() => ytApply(it), 500));
     }
@@ -745,14 +802,16 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
     function ytApply(it) {
         if (D.chats.indexOf(it) < 0) return;
         const now = ytLink(it.text), was = ytSeen.get(it) || '';
-        ytSeen.set(it, now ? now.id : '');
-        const cur = it.youtube ? ytId(it.youtube.url) : '';
+        ytSeen.set(it, now ? now.key : '');
+        const cur = it.youtube ? linkKey(it.youtube.url) : '';
         if (!now) {
             // 글에서 링크를 지우면 그 링크로 만든 카드도 같이 뺌
             if (was && cur === was) { delete it.youtube; ytFields(it); changed(); }
             return;
         }
-        if (cur === now.id) return;   // 같은 영상이면 손으로 고친 제목·설명 그대로 둠
+        if (cur === now.key) return;   // 같은 링크면 손으로 고친 제목·설명 그대로 둠
+        if (it.youtube && it.youtube.url && was === now.key) return;   // 글 속 링크는 그대로인데 카드 주소를 손으로 바꿔 둔 것 → 그대로
+        if (!now.id) { pageApply(it, now.url); return; }
         const id = now.id;
         const keep = it.youtube && !it.youtube.url ? it.youtube : {};   // 주소 없이 적어 둔 설명·제목은 살림
         it.youtube = { url: now.url, label: keep.label || 'YouTube', title: keep.title || '', desc: keep.desc || '', thumb: keep.thumb || 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' };
@@ -763,9 +822,9 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
             .then(d => {
                 if (!same() || it.youtube.title || !d || !d.title) return;
                 it.youtube.title = d.title; ytFields(it); changed();
-                toast('유튜브 카드를 붙였어요 — 「' + d.title + '」 (영상 설명은 더 보기 → 영상 설명에 적으면 카드에 나와요)', 'ok');
+                toast('유튜브 카드를 붙였어요 — 「' + d.title + '」 (영상 설명은 더 보기 → 설명에 적으면 카드에 나와요)', 'ok');
             })
-            .catch(() => { if (same()) toast('영상 제목을 못 가져왔어요 (비공개 영상이거나 주소가 틀렸을 수 있어요). 더 보기 → 영상 제목에 직접 적어 주세요.', 'warn'); });
+            .catch(() => { if (same()) toast('영상 제목을 못 가져왔어요 (비공개 영상이거나 주소가 틀렸을 수 있어요). 더 보기 → 제목에 직접 적어 주세요.', 'warn'); });
         const big = new Image();
         big.onload = () => {
             if (!same() || big.naturalWidth <= 120 || !/\/hqdefault\.jpg$/.test(it.youtube.thumb)) return;
@@ -966,6 +1025,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
             pvRender(true);
             setConnDefault();
             await draftOffer();
+            cardsFill();
         } catch (e) {
             setConn('불러오지 못함', 'bad');
             showLoadErr(e.message);

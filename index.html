@@ -89,6 +89,8 @@
     .yt .play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; transform: translate(-50%, -50%); display: block; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
     .yt .zoom { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,.45); display: grid; place-items: center; }
     .yt .zoom svg { width: 18px; height: 18px; display: block; }
+    .yt .thumb.free { aspect-ratio: auto; max-height: 420px; }
+    .yt .thumb.free img { height: auto; max-height: 420px; }
     .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 8px; }
     .reacts { display: flex; gap: 6px; }
     .chip {
@@ -416,6 +418,8 @@
           })
           .catch(function () {});
       }
+      // 유튜브가 아닌 링크(뉴스 기사 등)도 같은 카드: 관리자 페이지가 사이트 이름·제목·설명·사진을 youtube 칸에 적어 둠.
+      function hostOf(u) { var m = /^https?:\/\/(?:www\.)?([^\/?#:]+)/i.exec(String(u || "")); return m ? m[1] : ""; }
       function ytHtml(item) {
         var y = ytOf(item);
         if (!y) return "";
@@ -423,11 +427,13 @@
         var title = y.title || (id && ytTitles[id]) || "";
         if (!title) ytAsk(id);
         var thumb = y.thumb || (id ? "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg" : "");
-        var fix = "if(this.src.indexOf('maxresdefault')>0&&(event.type==='error'||this.naturalWidth<=120))this.src=this.src.replace('maxresdefault','hqdefault');";
+        var fix = id
+          ? "if(this.src.indexOf('maxresdefault')>0&&(event.type==='error'||this.naturalWidth<=120))this.src=this.src.replace('maxresdefault','hqdefault');"
+          : "if(event.type==='error')this.parentNode.style.display='none';";
         return '<a class="yt" data-yt="' + escA(id) + '" href="' + escA(y.url || "#") + '" target="_blank" rel="noopener">' +
-          '<div class="meta"><small>' + esc(y.label || "YouTube") + "</small><b>" + esc(title) + "</b>" +
+          '<div class="meta"><small>' + esc(y.label || (id ? "YouTube" : hostOf(y.url))) + "</small><b>" + esc(title) + "</b>" +
           (y.desc ? "<p>" + esc(y.desc) + "</p>" : "") + "</div>" +
-          (thumb ? '<div class="thumb"><img src="' + escA(thumb) + '" alt="썸네일" onload="' + fix + '" onerror="' + fix + '" />' + (id ? PLAY_SVG : "") + ZOOM_SVG + "</div>" : "") +
+          (thumb ? '<div class="thumb' + (id ? "" : " free") + '"><img src="' + escA(thumb) + '" alt="' + (id ? "썸네일" : "") + '" onload="' + fix + '" onerror="' + fix + '" />' + (id ? PLAY_SVG : "") + ZOOM_SVG + "</div>" : "") +
           "</a>";
       }
       function render() {

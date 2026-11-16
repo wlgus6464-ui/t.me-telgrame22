@@ -61,6 +61,13 @@ window.CHATS = [
     type: "post",
     image: "",
     text: "이더리움 재단 나흘 새 7,500개 처분\n\n이더리움 재단(Ethereum Foundation)이 최근 나흘 동안 이더리움(Ethereum) 7,500개를 시장에 내놓고 약 1,452만 USDS를 손에 쥐었다\n\n\nhttps://www.coinddak.com/news/articleView.html?idxno=9502",
+    youtube: {
+      url: "https://www.coinddak.com/news/articleView.html?idxno=9502",
+      label: "코인딱",
+      title: "이더리움 재단 나흘 새 7,500개 처분…1,850달러 아래로 밀린 이더리움, 매도 신호일까 - 코인딱",
+      desc: "이더리움 재단(Ethereum Foundation)이 최근 나흘 동안 이더리움(Ethereum) 7,500개를 시장에 내놓고 약 1,452만 USDS를 손에 쥐었",
+      thumb: "https://cdn.coinddak.com/news/photo/202611/9502_9472_2635.png"
+    },
     hearts: 5,
     likes: 2,
     views: 17,
