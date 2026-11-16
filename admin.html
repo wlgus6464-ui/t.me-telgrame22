@@ -45,6 +45,9 @@ a { color: var(--blue); }
 .tag.d { background: #2b2a1c; color: #e8cf6a; }
 .tag.c { background: #1f3326; color: #79dca0; }
 .cid { font-size: 12px; color: #5f7183; }
+.mzbtn { font: inherit; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 12px; border: 1px solid #34465a; background: transparent; color: #8fa3b6; cursor: pointer; white-space: nowrap; }
+.mzbtn:hover { border-color: #5a7590; color: #c9d6e2; }
+.mzbtn.on { background: #3a2230; border-color: #e0567a; color: #ff9ab4; }
 .ic { width: 28px; height: 28px; border: 1px solid transparent; background: transparent; border-radius: 6px; cursor: pointer; color: var(--mute); font-size: 14px; display: grid; place-items: center; }
 .ic:hover { background: var(--card2); border-color: var(--line2); color: var(--text); }
 .ic.del:hover { color: #ff9a9a; }
@@ -350,7 +353,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
     }
     const ID_RE = /^[A-Za-z_$][\w$]*$/;
     const SITE_ORDER = ['channelName', 'badge', 'subscribers', 'joinUrl', 'joinLabel', 'avatar'];
-    const POST_ORDER = ['id', 'type', 'image', 'images', 'text', 'disclaimer', 'youtube', 'hearts', 'likes', 'views', 'time'];
+    const POST_ORDER = ['id', 'type', 'image', 'images', 'text', 'mosaic', 'disclaimer', 'youtube', 'hearts', 'likes', 'views', 'time'];
     const YT_ORDER = ['url', 'label', 'title', 'desc', 'thumb'];
     const keyOf = k => ID_RE.test(k) ? k : JSON.stringify(k);
     function ordered(o, order) {
@@ -497,7 +500,9 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
         const more = !!(it.disclaimer || it.youtube);
         const num = (f, icon, title) => '<label title="' + title + '">' + icon + '<input data-f="' + f + '" inputmode="numeric" value="' + esc(it[f] == null ? 0 : it[f]) + '"></label>';
         return '<div class="card post' + (i === sel ? ' sel' : '') + '" data-i="' + i + '">' +
-            '<div class="ch"><span class="tag">글</span><span class="cid">' + esc(it.id) + '</span><span class="sp"></span>' + iconBtns + '</div>' +
+            '<div class="ch"><span class="tag">글</span><span class="cid">' + esc(it.id) + '</span>' +
+            '<button class="mzbtn' + (it.mosaic ? ' on' : '') + '" type="button" data-act="mosaic" title="켜면 사이트에서 \'종목명 :\' 뒤 글자만 흐리게 보여요. 다시 누르면 꺼져요.">' + (it.mosaic ? '✓ 종목명 가림' : '종목명 가리기') + '</button>' +
+            '<span class="sp"></span>' + iconBtns + '</div>' +
             '<div class="ph' + (imgs.length ? '' : ' empty') + '">' +
             imgs.map((p, k) => '<div class="th" data-act="imgrep" data-k="' + k + '" title="눌러서 다른 사진으로 바꾸기"><img src="' + esc(showUrl(p)) + '" alt="">' +
                 (D.pending[p] ? '<span class="new">새 사진</span>' : '') +
@@ -576,7 +581,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
     }
     function buildPv() {
         const d = pvData();
-        const data = '<script>window.SITE=' + safeJson(d.site) + ';window.CHATS=' + safeJson(d.chats) + ';<\/script>';
+        const data = '<script>window.ADMIN_PV=true;window.SITE=' + safeJson(d.site) + ';window.CHATS=' + safeJson(d.chats) + ';<\/script>';
         let html = D.indexHtml, done = false;
         html = html.replace(/<script>\s*document\.write\(.*chats\.js.*<\/script>/, () => { done = true; return data; });
         if (!done) html = html.replace(/<script[^>]*\bsrc=["']?(\.\/)?chats\.js[^>]*>\s*<\/script>/i, () => { done = true; return data; });
@@ -903,6 +908,13 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
         } else if (act === 'imgdel') {
             e.stopPropagation();
             const arr = imgsOf(it); arr.splice(k, 1); setImgs(it, arr);
+            renderList(); changed(); select(i, null, 'list');
+        } else if (act === 'mosaic') {
+            if (it.mosaic) delete it.mosaic;
+            else {
+                it.mosaic = true;
+                if (!/종목명\s*:\s*\S/.test(it.text || '')) toast("이 글에는 '종목명 :' 줄이 없어서 흐리게 할 글자가 없어요.", 'warn');
+            }
             renderList(); changed(); select(i, null, 'list');
         } else if (act === 'ytthumb') {
             openPicker({ kind: 'yt', i: i });

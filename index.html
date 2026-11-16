@@ -170,6 +170,7 @@
     }
     .c-btn svg { width: 24px; height: 24px; display: block; }
     .mosaic { filter: blur(6px); display: inline-block; }
+    .mz { filter: blur(6px); display: inline-block; -webkit-user-select: none; user-select: none; }
     .box { flex: 1; min-width: 0; display: flex; align-items: flex-end; position: relative; }
     .draft-mirror {
       position: absolute;
@@ -366,6 +367,30 @@
         });
       }
       function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+      // 관리자에서 '종목명 가리기'를 켠 글(mosaic: true): '종목명 :' 뒤 글자만 흐리게.
+      // 진짜 글자를 화면에 두면 복사하면 보이므로, 같은 길이의 아무 글자로 바꿔서 흐림 (관리자 미리보기만 진짜 글자).
+      function seedOf(s) { var h = 7; s = String(s || ""); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 2147483647; return h; }
+      function fakeText(s, h) {
+        var out = "";
+        for (var i = 0; i < s.length; i++) {
+          var c = s.charCodeAt(i), ch = s.charAt(i);
+          h = (h * 48271 + c + i) % 2147483647;
+          if (c >= 0xAC00 && c <= 0xD7A3) out += String.fromCharCode(0xAC00 + h % 11172);
+          else if (/[a-z]/.test(ch)) out += String.fromCharCode(97 + h % 26);
+          else if (/[A-Z]/.test(ch)) out += String.fromCharCode(65 + h % 26);
+          else if (/[0-9]/.test(ch)) out += String.fromCharCode(48 + h % 10);
+          else out += ch;
+        }
+        return out;
+      }
+      function mosaicHtml(item) {
+        var real = !!window.ADMIN_PV;
+        return String(item.text || "").split("\n").map(function (line) {
+          var m = /^(.*?종목명\s*:\s*)(\S.*)$/.exec(line);
+          if (!m) return linkify(esc(line));
+          return linkify(esc(m[1])) + '<span class="mz" aria-hidden="true">' + esc(real ? m[2] : fakeText(m[2], seedOf(item.id))) + "</span>";
+        }).join("\n");
+      }
       function getState(post) {
         var s = store[post.id] || {};
         return {
@@ -449,7 +474,7 @@
           return '<article class="msg' + (yt ? " wide" : "") + '" data-id="' + esc(item.id) + '">' +
             '<div class="author">' + esc(S.channelName || "") + (S.badge ? " " + S.badge : "") + "</div>" +
             photos +
-            '<div class="txt">' + (item.live ? maskHtml(item.text || "") : linkify(esc(item.text || ""))) + "</div>" +
+            '<div class="txt">' + (item.live ? maskHtml(item.text || "") : item.mosaic ? mosaicHtml(item) : linkify(esc(item.text || ""))) + "</div>" +
             (item.disclaimer ? '<div class="disc">' + esc(item.disclaimer) + "</div>" : "") + yt +
             '<div class="row"><div class="reacts">' +
               '<button class="chip' + (st.heartOn ? " on" : "") + '" data-kind="heart">' + HEART_ICON + " " + st.hearts + "</button>" +
