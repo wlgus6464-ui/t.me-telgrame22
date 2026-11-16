@@ -712,7 +712,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
         b.textContent = S.saving ? '저장하는 중…' : '💾 저장';
         document.title = (d ? '● ' : '') + '텔레그램 관리자';
     }
-    function changed(pv) { updateDirty(); if (pv !== false) pvSoon(); }
+    function changed(pv) { updateDirty(); draftSoon(); if (pv !== false) pvSoon(); }
 
     // ---------- 유튜브 카드 자동 ----------
     // 글에 유튜브 주소를 넣으면 유튜브 카드(주소·제목·썸네일)를 저절로 채움.
@@ -941,6 +941,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
         const r = $('#retry'); if (r) r.onclick = loadAll;
     }
     async function loadAll() {
+        DRAFT.ready = false;
         setConn('불러오는 중…', '');
         showLoadErr('');
         try {
@@ -964,6 +965,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
             renderChannel(); renderList(); updateDirty();
             pvRender(true);
             setConnDefault();
+            await draftOffer();
         } catch (e) {
             setConn('불러오지 못함', 'bad');
             showLoadErr(e.message);
@@ -1008,6 +1010,7 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
             });
             D.pending = {};
             D.loaded = text;
+            if (!isDirty()) draftDo('del'); else draftSoon();
             renderList(); renderChannel(); select(sel, null, 'save');
             setConn('홈페이지 반영 기다리는 중…', 'warn');
             toast('저장했어요. 홈페이지에 바뀌는지 확인하는 중이에요…', 'ok');
@@ -1111,6 +1114,73 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
         }
     });
 
+    // ---------- 임시 보관 (새로고침·창 닫힘 대비) ----------
+    // 고칠 때마다 이 컴퓨터 브라우저(IndexedDB)에 글·새 사진을 같이 담아 둠. 다시 열면 되살릴지 묻고, 💾 저장이 끝나면 지움.
+    const DRAFT = { db: null, timer: null, ready: false };
+    function draftDb() {
+        if (!DRAFT.db) DRAFT.db = new Promise((ok, no) => {
+            try {
+                const r = indexedDB.open('tgAdminDraft', 1);
+                r.onupgradeneeded = () => r.result.createObjectStore('d');
+                r.onsuccess = () => ok(r.result);
+                r.onerror = () => no(r.error);
+            } catch (e) { no(e); }
+        });
+        return DRAFT.db;
+    }
+    const draftKey = () => S.settings.owner + '/' + S.settings.repo + '/' + S.settings.branch;
+    async function draftDo(mode, val) {
+        try {
+            const db = await draftDb();
+            return await new Promise((ok, no) => {
+                const st = db.transaction('d', mode === 'get' ? 'readonly' : 'readwrite').objectStore('d');
+                const r = mode === 'get' ? st.get(draftKey()) : mode === 'put' ? st.put(val, draftKey()) : st.delete(draftKey());
+                r.onsuccess = () => ok(r.result);
+                r.onerror = () => no(r.error);
+            });
+        } catch (e) { return null; }
+    }
+    function draftSoon() {
+        if (!DRAFT.ready) return;
+        clearTimeout(DRAFT.timer);
+        DRAFT.timer = setTimeout(draftWrite, 300);
+    }
+    function draftWrite() {
+        clearTimeout(DRAFT.timer);
+        if (!DRAFT.ready) return;
+        if (!isDirty()) { draftDo('del'); return; }
+        const files = {};
+        usedPaths().forEach(p => { if (D.pending[p]) files[p] = D.pending[p].file; });
+        draftDo('put', { text: serialize(), files: files, sha: D.sha, time: Date.now() });
+    }
+    async function draftOffer() {
+        const d = await draftDo('get');
+        if (d && d.text && d.text !== D.loaded) {
+            const t = new Date(d.time || Date.now()), h = t.getHours(), m = t.getMinutes();
+            const when = (t.getMonth() + 1) + '월 ' + t.getDate() + '일 ' + (h < 12 ? '오전' : '오후') + ' ' + (h % 12 || 12) + ':' + (m < 10 ? '0' : '') + m;
+            const newer = d.sha && D.sha && d.sha !== D.sha;
+            const yes = confirm('저장 안 한 수정이 남아 있어요.\n(마지막으로 고친 때: ' + when + ')\n\n[확인] = 되살리기\n[취소] = GitHub 에 있는 판으로 시작 (새로 고치기 시작하면 남은 수정은 지워져요)' +
+                (newer ? '\n\n※ 그 사이 GitHub 쪽 글도 바뀌었어요. 되살린 뒤 저장하면 이 화면 것으로 덮어써요.' : ''));
+            if (yes) draftRestore(d);
+        }
+        DRAFT.ready = true;
+    }
+    function draftRestore(d) {
+        try {
+            const p = parseChats(d.text);
+            D.header = p.header; D.site = p.site; D.chats = p.chats;
+            Object.keys(d.files || {}).forEach(path => { const f = d.files[path]; if (f) D.pending[path] = { file: f, url: URL.createObjectURL(f) }; });
+            fixCase();
+            sel = -1; undo = null;
+            renderChannel(); renderList(); updateDirty(); pvSoon(0);
+            toast('저장 안 했던 수정을 되살렸어요. 💾 저장을 눌러야 홈페이지에 바뀌어요.', 'ok', true);
+        } catch (e) {
+            toast('남은 수정을 되살리지 못했어요 (' + e.message + ').', 'bad', true);
+        }
+    }
+    window.addEventListener('pagehide', draftWrite);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') draftWrite(); });
+
     // ---------- 그 밖 ----------
     function onKey(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); save(); }
@@ -1119,7 +1189,8 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
     $('#btnSave').addEventListener('click', save);
     $('#btnReload').addEventListener('click', () => {
         if (isDirty() && !confirm('GitHub 에서 다시 불러오면 저장 안 한 수정이 사라집니다. 계속할까요?')) return;
-        loadAll();
+        DRAFT.ready = false;
+        draftDo('del').then(loadAll);
     });
     window.addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = ''; } });
     function switchTab(pv) {
