@@ -117,6 +117,7 @@ window.CHATS = [
     type: "post",
     image: "",
     text: "종목명 : 아크 (ARK)\n\n거래소 : 업비트 , 빗썸\n\n매수가 : 300원~305원\n\n매도가 : 700원 (130% 정도 상승 예상)",
+    mosaic: true,
     hearts: 12,
     likes: 5,
     views: 17,
