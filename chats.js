@@ -3,12 +3,12 @@
    사진: assets/1.png ~ assets/10.png (위에서부터 1번)
    ========================================================= */
 window.SITE = {
-  channelName: "구독자 무료추천⚠️",
+  channelName: "5살도 이해하는 코인학",
   badge: "",
-  subscribers: "구독자 827명",
+  subscribers: "구독자 17명",
   joinUrl: "https://t.me/nostradamousbtc",
   joinLabel: "채널 들어가기",
-  avatar: "assets/avatar.jpg"
+  avatar: "assets/5.png"
 };
 window.CHATS = [
   { id: "day-917", type: "date", text: "9월 17일" },
@@ -16,7 +16,7 @@ window.CHATS = [
     id: "post-1",
     type: "post",
     image: "",
-    text: "종목명 : 멀티버스엑스 (EGLD)\n거래소 : 업비트 , 빗썸\n매수가 : 5,000~5,100원\n매도가 : 10,000원 (100% 상승 예상)",
+    text: "",
     disclaimer: "",
     hearts: 55,
     likes: 6,
@@ -38,7 +38,7 @@ window.CHATS = [
   {
     id: "post-3",
     type: "post",
-    image: "assets/1.PNG",
+    image: "assets/1.png",
     text: "멀티버스엑스 9월 17일 추천 이후로 100% 상승 나왔습니다.\n수익보신분들 축하드리고, 도움되셨다면 하트 한번씩 눌러주세요!",
     hearts: 201,
     likes: 55,
@@ -83,7 +83,7 @@ window.CHATS = [
   {
     id: "post-7",
     type: "post",
-    image: "assets/2.PNG",
+    image: "assets/2.png",
     text: "비쓰리 9월 20일 추천 이후로 약 65% 이상 상승나왔습니다.\n수익보신분들 축하드립니다!\n수익보셨다면 다들 하트한번씩~~",
     hearts: 316,
     likes: 109,
@@ -93,7 +93,7 @@ window.CHATS = [
   {
     id: "post-8",
     type: "post",
-    image: "assets/3.PNG",
+    image: "assets/3.png",
     text: "21일 추천드린 메타플렉스도 크게 상승하고있네요.\n다들 축하드립니다!",
     hearts: 341,
     likes: 119,
@@ -159,7 +159,7 @@ window.CHATS = [
   {
     id: "post-14",
     type: "post",
-    image: "assets/4.PNG",
+    image: "assets/4.png",
     text: "쑨코인 9월 25일 추천 이후로 약 170% 이상 상승나왔습니다.\n수익보신분들 축하드립니다!\n수익보셨다면 다들 하트한번씩~~",
     hearts: 515,
     likes: 177,
