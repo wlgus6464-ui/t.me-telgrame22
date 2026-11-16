@@ -394,11 +394,14 @@
       function escA(s) { return esc(s).replace(/"/g, "&quot;"); }
       function ytId(u) { var m = YT_RE.exec(String(u || "")); return m ? m[1] : ""; }
       function ytOf(item) {
-        var y = item.youtube;
-        if (y && (y.url || y.title || y.thumb)) return y;
-        var urls = String(item.text || "").match(/https?:\/\/[^\s]+/g) || [];
-        for (var i = 0; i < urls.length; i++) if (ytId(urls[i])) return { url: urls[i] };
-        return null;
+        var y = item.youtube || {};
+        var url = y.url;
+        if (!url) {
+          var urls = String(item.text || "").match(/https?:\/\/[^\s]+/g) || [];
+          for (var i = 0; i < urls.length; i++) if (ytId(urls[i])) { url = urls[i]; break; }
+        }
+        if (!url && !y.title && !y.thumb) return null;
+        return { url: url, label: y.label, title: y.title, desc: y.desc, thumb: y.thumb };
       }
       function ytAsk(id) {
         if (!id || ytTitles[id] || ytAsked[id] || !window.fetch) return;

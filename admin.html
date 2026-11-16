@@ -754,7 +754,8 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
         }
         if (cur === now.id) return;   // 같은 영상이면 손으로 고친 제목·설명 그대로 둠
         const id = now.id;
-        it.youtube = { url: now.url, label: 'YouTube', title: '', desc: '', thumb: 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' };
+        const keep = it.youtube && !it.youtube.url ? it.youtube : {};   // 주소 없이 적어 둔 설명·제목은 살림
+        it.youtube = { url: now.url, label: keep.label || 'YouTube', title: keep.title || '', desc: keep.desc || '', thumb: keep.thumb || 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' };
         ytFields(it); changed();
         const same = () => D.chats.indexOf(it) >= 0 && it.youtube && ytId(it.youtube.url) === id;
         fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id))
