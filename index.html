@@ -79,14 +79,16 @@
     .msg .txt { font-size: 15px; font-weight: 300; line-height: 1.55; white-space: pre-wrap; word-break: break-word; text-align: right; }
     .msg .txt a { color: var(--link); text-decoration: none; }
     .msg .disc { margin-top: 12px; font-size: 14px; font-weight: 400; font-style: italic; color: #d7e0e8; line-height: 1.5; text-align: right; }
-    .yt { margin-top: 10px; border-left: 3px solid #7b5cff; background: #1b2836; border-radius: 0 8px 8px 0; overflow: hidden; display: block; color: inherit; text-decoration: none; }
-    .yt .meta { padding: 8px 10px 6px; }
-    .yt .meta small { color: #8b9aa8; font-size: 12px; }
-    .yt .meta b { display: block; font-size: 14px; margin: 3px 0; }
-    .yt .meta p { color: #9aafbf; font-size: 13px; white-space: pre-wrap; }
-    .yt .thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+    .msg.wide { width: calc(90% - 18px); }
+    .yt { margin-top: 8px; display: block; color: inherit; text-decoration: none; text-align: left; background: rgba(150, 120, 255, .14); border-left: 3px solid #9a82ff; border-radius: 4px 7px 7px 4px; padding: 6px 9px 9px 9px; }
+    .yt .meta small { display: block; color: #b19dff; font-size: 14px; font-weight: 700; line-height: 1.4; }
+    .yt .meta b { display: block; color: #ffffff; font-size: 14.5px; font-weight: 700; line-height: 1.4; word-break: break-word; }
+    .yt .meta p { color: #e3e9ef; font-size: 14px; font-weight: 300; line-height: 1.45; white-space: pre-wrap; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .yt .thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; margin-top: 8px; border-radius: 6px; overflow: hidden; background: #0e1621; }
     .yt .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .yt .play { display: none; }
+    .yt .play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; transform: translate(-50%, -50%); display: block; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+    .yt .zoom { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,.45); display: grid; place-items: center; }
+    .yt .zoom svg { width: 18px; height: 18px; display: block; }
     .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 8px; }
     .reacts { display: flex; gap: 6px; }
     .chip {
@@ -381,6 +383,50 @@
         });
         return '<img src="' + esc(tries[0]) + '" data-try="' + esc(tries.slice(1).join("|")) + '" alt="" onerror="var n=(this.getAttribute(\'data-try\')||\'\').split(\'|\').filter(Boolean);if(!n.length){this.style.display=\'none\';return;}this.setAttribute(\'data-try\',n.slice(1).join(\'|\'));this.src=n[0];" />';
       }
+      // 유튜브 카드: 글(text) 안에 유튜브 주소가 있으면 텔레그램처럼 미리보기 카드를 자동으로 붙임.
+      // youtube 칸에 제목·설명·썸네일을 직접 적어 두면 그것을 먼저 씀.
+      var YT_RE = /(?:youtube\.com\/(?:watch\?(?:[^\s#]*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/;
+      var YT_KEY = "tg-yt-title-v1";
+      var ytTitles = (function () { try { return JSON.parse(localStorage.getItem(YT_KEY) || "{}") || {}; } catch (e) { return {}; } })();
+      var ytAsked = {};
+      var PLAY_SVG = '<svg class="play" viewBox="0 0 68 48" aria-hidden="true"><path d="M66.5 7.7c-.8-2.9-2.5-5.4-5.4-6.2C55.8.1 34 0 34 0S12.2.1 6.9 1.6C4 2.3 2.3 4.8 1.5 7.7 0 13 0 24 0 24s0 11 1.5 16.3c.8 2.9 2.5 5.4 5.4 6.2C12.2 47.9 34 48 34 48s21.8-.1 27.1-1.6c2.9-.8 4.6-3.3 5.4-6.2C68 35 68 24 68 24s0-11-1.5-16.3z" fill="#f00"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>';
+      var ZOOM_SVG = '<span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20M10.5 7.8v5.4M7.8 10.5h5.4"/></svg></span>';
+      function escA(s) { return esc(s).replace(/"/g, "&quot;"); }
+      function ytId(u) { var m = YT_RE.exec(String(u || "")); return m ? m[1] : ""; }
+      function ytOf(item) {
+        var y = item.youtube;
+        if (y && (y.url || y.title || y.thumb)) return y;
+        var urls = String(item.text || "").match(/https?:\/\/[^\s]+/g) || [];
+        for (var i = 0; i < urls.length; i++) if (ytId(urls[i])) return { url: urls[i] };
+        return null;
+      }
+      function ytAsk(id) {
+        if (!id || ytTitles[id] || ytAsked[id] || !window.fetch) return;
+        ytAsked[id] = true;
+        fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + id))
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (!d || !d.title) return;
+            ytTitles[id] = d.title;
+            try { localStorage.setItem(YT_KEY, JSON.stringify(ytTitles)); } catch (e) {}
+            Array.prototype.forEach.call(document.querySelectorAll('.yt[data-yt="' + id + '"] b'), function (b) { if (!b.textContent) b.textContent = d.title; });
+          })
+          .catch(function () {});
+      }
+      function ytHtml(item) {
+        var y = ytOf(item);
+        if (!y) return "";
+        var id = ytId(y.url);
+        var title = y.title || (id && ytTitles[id]) || "";
+        if (!title) ytAsk(id);
+        var thumb = y.thumb || (id ? "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg" : "");
+        var fix = "if(this.src.indexOf('maxresdefault')>0&&(event.type==='error'||this.naturalWidth<=120))this.src=this.src.replace('maxresdefault','hqdefault');";
+        return '<a class="yt" data-yt="' + escA(id) + '" href="' + escA(y.url || "#") + '" target="_blank" rel="noopener">' +
+          '<div class="meta"><small>' + esc(y.label || "YouTube") + "</small><b>" + esc(title) + "</b>" +
+          (y.desc ? "<p>" + esc(y.desc) + "</p>" : "") + "</div>" +
+          (thumb ? '<div class="thumb"><img src="' + escA(thumb) + '" alt="썸네일" onload="' + fix + '" onerror="' + fix + '" />' + (id ? PLAY_SVG : "") + ZOOM_SVG + "</div>" : "") +
+          "</a>";
+      }
       function render() {
         document.getElementById("feed").innerHTML = list.map(function (item) {
           if (item.type === "date") return '<div class="date-chip"><span>' + esc(item.text) + "</span></div>";
@@ -390,14 +436,8 @@
           if (imgs.length) {
             photos = '<div class="photos">' + imgs.map(photoHtml).join("") + "</div>";
           }
-          var yt = "";
-          if (item.youtube) {
-            yt = '<a class="yt" href="' + esc(item.youtube.url) + '" target="_blank" rel="noopener">' +
-              '<div class="meta"><small>' + esc(item.youtube.label || "YouTube") + "</small>" +
-              "<b>" + esc(item.youtube.title || "") + "</b><p>" + esc(item.youtube.desc || "") + "</p></div>" +
-              '<div class="thumb"><img src="' + esc(item.youtube.thumb) + '" alt="썸네일" width="1920" height="1080" /></div></a>';
-          }
-          return '<article class="msg" data-id="' + esc(item.id) + '">' +
+          var yt = ytHtml(item);
+          return '<article class="msg' + (yt ? " wide" : "") + '" data-id="' + esc(item.id) + '">' +
             '<div class="author">' + esc(S.channelName || "") + (S.badge ? " " + S.badge : "") + "</div>" +
             photos +
             '<div class="txt">' + (item.live ? maskHtml(item.text || "") : linkify(esc(item.text || ""))) + "</div>" +

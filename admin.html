@@ -628,7 +628,9 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
                 t.setAttribute('spellcheck', 'false');
                 t.addEventListener('input', () => {
                     const v = t.innerText.replace(/\n$/, '');
+                    const before = it.text;
                     it.text = v;
+                    ytWatch(it, before);
                     const card = cardOf(D.chats.indexOf(it));
                     const fld = card && card.querySelector('[data-f="text"]');
                     if (fld) { fld.value = v; if (fld.tagName === 'TEXTAREA') grow(fld); }
@@ -712,6 +714,65 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
     }
     function changed(pv) { updateDirty(); if (pv !== false) pvSoon(); }
 
+    // ---------- 유튜브 카드 자동 ----------
+    // 글에 유튜브 주소를 넣으면 유튜브 카드(주소·제목·썸네일)를 저절로 채움.
+    // 영상 설명은 유튜브가 브라우저에 안 내줘서 '더 보기 → 영상 설명'에 직접 적음.
+    const YT_RE = /(?:youtube\.com\/(?:watch\?(?:[^\s#]*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/;
+    const ytId = u => { const m = YT_RE.exec(String(u || '')); return m ? m[1] : ''; };
+    function ytLink(text) {
+        const urls = String(text || '').match(/https?:\/\/[^\s]+/g) || [];
+        for (const u of urls) { const id = ytId(u); if (id) return { url: u, id: id }; }
+        return null;
+    }
+    const ytSeen = new WeakMap(), ytTimer = new WeakMap();
+    function ytWatch(it, before) {
+        if (!it || it.type === 'date') return;
+        if (!ytSeen.has(it)) { const o = ytLink(before); ytSeen.set(it, o ? o.id : ''); }
+        clearTimeout(ytTimer.get(it));
+        ytTimer.set(it, setTimeout(() => ytApply(it), 500));
+    }
+    function ytFields(it) {
+        const card = cardOf(D.chats.indexOf(it));
+        if (!card) return;
+        const yt = it.youtube || {};
+        YT_ORDER.forEach(k => {
+            const el = card.querySelector('[data-f="yt.' + k + '"]');
+            if (el && el !== document.activeElement) { el.value = yt[k] || ''; if (el.tagName === 'TEXTAREA') grow(el); }
+        });
+        const det = card.querySelector('details.more');
+        if (det && it.youtube) det.open = true;
+    }
+    function ytApply(it) {
+        if (D.chats.indexOf(it) < 0) return;
+        const now = ytLink(it.text), was = ytSeen.get(it) || '';
+        ytSeen.set(it, now ? now.id : '');
+        const cur = it.youtube ? ytId(it.youtube.url) : '';
+        if (!now) {
+            // 글에서 링크를 지우면 그 링크로 만든 카드도 같이 뺌
+            if (was && cur === was) { delete it.youtube; ytFields(it); changed(); }
+            return;
+        }
+        if (cur === now.id) return;   // 같은 영상이면 손으로 고친 제목·설명 그대로 둠
+        const id = now.id;
+        it.youtube = { url: now.url, label: 'YouTube', title: '', desc: '', thumb: 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' };
+        ytFields(it); changed();
+        const same = () => D.chats.indexOf(it) >= 0 && it.youtube && ytId(it.youtube.url) === id;
+        fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id))
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(String(r.status))))
+            .then(d => {
+                if (!same() || it.youtube.title || !d || !d.title) return;
+                it.youtube.title = d.title; ytFields(it); changed();
+                toast('유튜브 카드를 붙였어요 — 「' + d.title + '」 (영상 설명은 더 보기 → 영상 설명에 적으면 카드에 나와요)', 'ok');
+            })
+            .catch(() => { if (same()) toast('영상 제목을 못 가져왔어요 (비공개 영상이거나 주소가 틀렸을 수 있어요). 더 보기 → 영상 제목에 직접 적어 주세요.', 'warn'); });
+        const big = new Image();
+        big.onload = () => {
+            if (!same() || big.naturalWidth <= 120 || !/\/hqdefault\.jpg$/.test(it.youtube.thumb)) return;
+            it.youtube.thumb = big.src; ytFields(it); changed();
+        };
+        big.src = 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+    }
+
     // ---------- 왼쪽 칸 입력 ----------
     $('#edit').addEventListener('input', e => {
         const t = e.target;
@@ -731,7 +792,9 @@ dialog h3 { font-size: 16px; margin-bottom: 8px; }
             it.youtube[k] = t.value;
             if (YT_ORDER.every(x => !it.youtube[x])) delete it.youtube;
         } else {
+            const before = it[f];
             it[f] = t.value;
+            if (f === 'text') ytWatch(it, before);
         }
         if (t.tagName === 'TEXTAREA') grow(t);
         changed();
