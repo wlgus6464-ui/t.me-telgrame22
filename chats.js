@@ -111,12 +111,12 @@ window.CHATS = [
     views: 17,
     time: "오후 4:15"
   },
-  { id: "day-927", type: "date", text: "11월 17일" },
+  { id: "day-927", type: "date", text: "11월 18일" },
   {
     id: "post-12",
     type: "post",
     image: "",
-    text: "종목명 : 베란타 (AVNT)\n\n거래소 : 업비트 , 빗썸\n\n매수가 : 95원~100원\n\n매도가 : 3,700원 (무려 37배입니다. 하지만 소액으로 천천히, 장기적으로 끌고가시길 바라겠습니다)",
+    text: "종목명 : 월드코인 (WLD)\n\n거래소 : 업비트 , 빗썸\n\n매수가 : 350원~360원\n\n매도가 : 830원 (200% 정도 상승 예상)",
     mosaic: true,
     hearts: 12,
     likes: 5,
