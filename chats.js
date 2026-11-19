@@ -116,11 +116,11 @@ window.CHATS = [
     id: "post-12",
     type: "post",
     image: "",
-    text: "종목명 : 월드코인 (WLD)\n\n거래소 : 업비트 , 빗썸\n\n매수가 : 350원~360원\n\n매도가 : 830원 (130% 정도 상승 예상)",
+    text: "종목명 : 유니스왑 (SWAP)\n\n거래소 : 업비트 , 빗썸\n\n매수가 : 7,000원~7,100원\n\n매도가 : 14,600원 (100% 정도 상승 예상)",
     mosaic: true,
-    hearts: 12,
+    hearts: 5,
     likes: 5,
     views: 17,
-    time: "오전 11:17"
+    time: "오후 4:47"
   },
 ];
