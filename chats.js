@@ -111,7 +111,7 @@ window.CHATS = [
     views: 17,
     time: "오후 4:15"
   },
-  { id: "day-927", type: "date", text: "11월 18일" },
+  { id: "day-927", type: "date", text: "11월 19일" },
   {
     id: "post-12",
     type: "post",
